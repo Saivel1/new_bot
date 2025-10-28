@@ -41,5 +41,6 @@ async def main_subs(callback: CallbackQuery):
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
-            reply_markup=BackButton.back_subs()
+            reply_markup=BackButton.back_subs(),
+            parse_mode="MARKDOWN"
         )
