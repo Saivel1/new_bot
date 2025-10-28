@@ -37,7 +37,7 @@ async def main_subs(callback: CallbackQuery):
         link = res.get('subscription_url') #type: ignore
         text_reponse += "\n" + link
         for i in range(len(res.get("links"))): 
-            text_reponse += f"{'/n' * 5 } Подписка {i}: /n {res.get('links')[i]}" #type: ignore
+            text_reponse += f"{'\n' * 5 } Подписка {i + 1}: \n {res.get('links')[i]}" #type: ignore
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
