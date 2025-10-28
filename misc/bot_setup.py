@@ -7,9 +7,7 @@ prices = [
 ]
 
 sub_servs = [
-    ("Digital", "digital"),
-    ("World", "world"),
-    ("Mobile", "moba")
+    ("Main", "main")
 ]
 
 

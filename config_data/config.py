@@ -7,7 +7,12 @@ class Settings(BaseSettings):
     # Bot
     BOT_TOKEN: str
     WEBHOOK_URL: str
-    
+
+    #Marzban
+    M_DIGITAL_URL: str
+    M_DIGITAL_U: str
+    M_DIGITAL_P: str
+        
     model_config = SettingsConfigDict(
         env_file=str(BASE_DIR / ".env"),
         env_file_encoding='utf-8', 
