@@ -6,6 +6,9 @@ from config_data.config import settings
 
 # Импортируем handlers для регистрации
 import handlers.start
+import handlers.instructions
+import handlers.paymenu
+import handlers.subsmenu
 
 app = FastAPI()
 
