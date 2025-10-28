@@ -40,6 +40,6 @@ async def main_subs(callback: CallbackQuery):
             text_reponse += f"{'/n' * 5 } Подписка {i}: /n {res.get('links')[i]}" #type: ignore
 
         await callback.message.edit_text( #type: ignore
-            text="Тут подписки",
+            text=text_reponse,
             reply_markup=BackButton.back_subs()
         )
