@@ -8,6 +8,5 @@ class MainKeyboard:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="Оплатить", callback_data="pay_menu")],
             [InlineKeyboardButton(text="Подписка и ссылки", callback_data="subs")],
-            [InlineKeyboardButton(text="Инструкция", callback_data="instruction")],
-            [InlineKeyboardButton(text="Текст", copy_text=CopyTextButton(text='Жопы'))]
+            [InlineKeyboardButton(text="Инструкция", callback_data="instruction")]
         ])

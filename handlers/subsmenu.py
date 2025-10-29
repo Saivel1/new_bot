@@ -37,10 +37,38 @@ async def main_subs(callback: CallbackQuery):
         text_reponse = "Здесь содержаться подписки"
         link = res.get('subscription_url') #type: ignore
         text_reponse += "\n"*2 + f"`{link}`"
-        links = await get_links(username=user_id)
+        links_marz = res.get("links") #type: ignore
+        links = await get_links(links_marz)
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
             reply_markup=SubMenu.links_keyboard(links),
             parse_mode="MARKDOWN"
+        )
+
+@dp.callback_query(F.data.startswith("sub_"))
+async def process_sub(callback: CallbackQuery):
+    sub_id = callback.data.replace("sub_", "") #type: ignore
+    user_id = str(callback.from_user.id)
+
+    async with marz_back as backend: #type: ignore
+        res = await backend.get_user(user_id)
+        if res is None:
+            await callback.message.edit_text( #type: ignore
+            text="Пусто",
+            reply_markup=BackButton.back_subs()
+        )
+
+        links_marz = res.get("links") #type: ignore
+        link = res.get("links")[int(sub_id)] #type: ignore
+        sub_url = res.get('subscription_url') #type: ignore
+
+        text_response = f"""
+Здесь содержаться подписки:
+{sub_url}{"\n"*2}{link}
+"""
+        links = await get_links(links_marz)
+        await callback.message.edit_text( #type: ignore
+            text=text_response,
+            reply_markup=SubMenu.links_keyboard(links=links)
         )
