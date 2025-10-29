@@ -54,10 +54,10 @@ class PaymentYoo:
                         ]
                 }
             }, payment_id)
-
             payment_data = json.loads(payment.json())
             self.id = payment_data['id']
             self.link = payment.confirmation.confirmation_url # type: ignore
+            return self.link
         except Exception as e:
             logger.warning(f'Ошибка создания платежа: {e}')
 
