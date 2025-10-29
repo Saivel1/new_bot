@@ -19,6 +19,7 @@ class Anymessage():
                 url = f'https://api.anymessage.shop/email/order?token={s.ANY_TOKEN}&site={s.ANY_SITE}&domain={s.ANY_DOMAIN}'
                 response = await session.get(url)
                 data = await response.json()
+                logger.info(data)
                 self.email = data['email']
                 return self.email
             except Exception as e:
