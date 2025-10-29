@@ -57,7 +57,8 @@ async def process_sub(callback: CallbackQuery):
 
         text_response = f"""
 Здесь содержаться подписки:
-{sub_url}{"\n"*2} <code>{link}</code>
+
+<h1><code>{sub_url}</code></h1>{"\n"*2} <code>{link}</code>
 """
         links = await get_links(links_marz)
         await callback.message.edit_text( #type: ignore
