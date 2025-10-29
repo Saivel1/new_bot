@@ -3,17 +3,25 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     pass
+
 
 class PaymentData(Base):
     __tablename__ = 'payment_data'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     payment_id: Mapped[str]
     status: Mapped[str] = mapped_column(server_default='pending')
     amount: Mapped[int]
-    
+
     pass
+
+
+class PaymentIDs(Base):
+    __tablename__ = 'payment_ids'
+
+    payment_id: Mapped[str]
+    user_id: Mapped[str]
 
 
 

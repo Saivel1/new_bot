@@ -2,20 +2,11 @@ from yookassa import Payment, Configuration
 import uuid
 import json
 import logging
-# from config_data.config import load_yookassa_config
+from config_data.config import settings
+from logger_setup import logger
 
-# config = load_yookassa_config('.env')
-
-
-logger = logging.getLogger(__name__)
-format='[%(asctime)s] #%(levelname)-15s %(filename)s: %(lineno)d - %(pathname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=format)
-
-ACCOUNT_ID=1148677
-SECRET_KEY="test_esP38iWHxikeiA49V7WsSaaDTT61i5fcCuEdv4fnEe0"
-
-Configuration.account_id = ACCOUNT_ID
-Configuration.secret_key = SECRET_KEY
+Configuration.account_id = settings.ACCOUNT_ID
+Configuration.secret_key = settings.SECRET_KEY
 
 
 class PaymentYoo:
@@ -57,7 +48,7 @@ class PaymentYoo:
             payment_data = json.loads(payment.json())
             self.id = payment_data['id']
             self.link = payment.confirmation.confirmation_url # type: ignore
-            return self.link
+            return (self.link, self.id)
         except Exception as e:
             logger.warning(f'Ошибка создания платежа: {e}')
 

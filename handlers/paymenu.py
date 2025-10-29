@@ -7,8 +7,22 @@ from logger_setup import logger
 from yooka.payments import PaymentYoo
 from yooka.mails import Anymessage
 from aiogram.types import InlineKeyboardButton
+from db.db_models import PaymentIDs
+from db.database import async_session
+from repositories.base import BaseRepository
 
 
+async def create_order(amount: int):
+    mail = await Anymessage().order_email()
+    res = await PaymentYoo().create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
+    return res
+
+
+async def keyboard_buld(order_url: str):
+    to_pay = [InlineKeyboardButton(text="Оплатить", url=order_url)]
+    keyboard = BackButton.back_pays()
+    keyboard.inline_keyboard.insert(0, to_pay)
+    return keyboard
 
 
 @dp.callback_query(F.data == "pay_menu")
@@ -26,19 +40,24 @@ async def pay_menu(callback: CallbackQuery):
 async def payment_process(callback: CallbackQuery):
     user_id = str(callback.from_user.id)
     amount = int(callback.data.replace("pay_", "")) #type: ignore
-    logger.info(f'Пользователь ID {user_id} Перещёл в оплату с суммой {amount}')
 
-    mail = await Anymessage().order_email()
-    order_url = await PaymentYoo().create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
+    logger.info(f'Пользователь ID {user_id} Перещёл в оплату с суммой {amount}')
+    order_url, order_id = await create_order(amount=amount) #type: ignore
+
+
+    async with async_session() as session:
+        repo = BaseRepository(session=session, model=PaymentIDs)
+        await repo.create({
+            "payment_id": order_id,
+            "user_id": user_id
+        })
 
     reply_text = f"""
 Ссылка для оплаты:
 
 {order_url}
 """
-    to_pay = [InlineKeyboardButton(text="Оплатить", url=order_url)]
-    keyboard = BackButton.back_pays()
-    keyboard.inline_keyboard.insert(0, to_pay)
+    keyboard = await keyboard_buld(order_url=order_url) #type: ignore
 
     await callback.message.edit_text( # type: ignore
         text=reply_text,

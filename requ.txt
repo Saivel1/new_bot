@@ -86,3 +86,4 @@ uvicorn==0.38.0
 wrapt==1.17.3
 yarl==1.22.0
 yookassa==3.7.1
+aiosqlite>=0.19.0

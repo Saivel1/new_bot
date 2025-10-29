@@ -21,10 +21,12 @@ class Settings(BaseSettings):
     #DB SetUp
     DB_NAME: str
 
+    #YooKassa
+    ACCOUNT_ID: int
+    SECRET_KEY: str
+
     @property
     def DATABASE_URL_aiosqlite(self):
-        # sqlite+aiosqlite:///database.db (относительный путь)
-        # sqlite+aiosqlite:////absolute/path/to/database.db (абсолютный путь)
         return f"sqlite+aiosqlite:///{self.DB_NAME}"
         
     model_config = SettingsConfigDict(
