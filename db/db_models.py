@@ -25,4 +25,4 @@ class UserOrm(Base):
     user_id: Mapped[str]
     username: Mapped[str | None]
     trial: Mapped[bool] = mapped_column(default=False)
-    subscription_end: Mapped[int]
+    subscription_end: Mapped[int | None]
