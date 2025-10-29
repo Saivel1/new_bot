@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardButton, CopyTextButton
+from aiogram.types import InlineKeyboardButton
 from misc.bot_setup import *
 from .deps import back
 

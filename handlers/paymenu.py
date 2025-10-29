@@ -6,6 +6,8 @@ from aiogram.types import CallbackQuery
 from logger_setup import logger
 from yooka.payments import PaymentYoo
 from yooka.mails import Anymessage
+from aiogram.types import InlineKeyboardButton
+
 
 
 
@@ -24,20 +26,19 @@ async def pay_menu(callback: CallbackQuery):
 async def payment_process(callback: CallbackQuery):
     user_id = str(callback.from_user.id)
     amount = int(callback.data.replace("pay_", "")) #type: ignore
-    payment = PaymentYoo()
-    anymessage = Anymessage()
-    mail = await anymessage.order_email()
-    logger.info(mail)
-    logger.info(f'Пользователь ID {user_id} Перещёл в оплату')
+    logger.info(f'Пользователь ID {user_id} Перещёл в оплату с суммой {amount}')
 
-    order_url = await payment.create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
+    mail = await Anymessage().order_email()
+    order_url = await PaymentYoo().create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
+
     reply_text = f"""
 Ссылка для оплаты:
 
 {order_url}
 """
+    to_pay = [InlineKeyboardButton(text="Оплатить", url=order_url)]
 
     await callback.message.edit_text( # type: ignore
         text=reply_text,
-        reply_markup=BackButton.back_pays()
+        reply_markup=BackButton.back_pays().inline_keyboard.append(to_pay)
     )
