@@ -69,7 +69,7 @@ class BackendContext:
                 url= self.base_url + get_route,
                 headers=self.headers
             )
-            
+
             if request.status not in (200, 201):
                 logger.warning(f"Ошибка в редактирование пользовтеля {id}")
                 return None
@@ -97,6 +97,39 @@ class BackendContext:
                 logger.warning(f"Ошибка в редактирование пользовтеля {id}")
                 return None
             
+            json_data = await request.json()
+            logger.info(json_data)
+            return json_data
+    
+    async def create_user(self, username):
+        username = str(username)
+
+        get_route = f"/api/user/"
+        data = {
+            "username": username,
+            "proxies": {
+                "vless": {
+                    "flow": "xtls-rprx-vision"
+                }
+            },
+            "inbounds": {
+                "vless": [
+                "VLESS TCP REALITY",
+                ]
+            }
+        }
+
+        async with self.session as session: #type: ignore
+            request = await session.post(
+                url= self.base_url + get_route,
+                headers=self.headers, 
+                json=data
+            )
+            
+            if request.status not in (200, 201):
+                logger.warning(f"Ошибка в создании пользовтеля")
+                return None
+
             json_data = await request.json()
             logger.info(json_data)
             return json_data
