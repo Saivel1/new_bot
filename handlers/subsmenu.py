@@ -58,17 +58,21 @@ async def process_sub(callback: CallbackQuery):
             text="Пусто",
             reply_markup=BackButton.back_subs()
         )
+        logger.info(res)
 
         links_marz = res.get("links") #type: ignore
         link = res.get("links")[int(sub_id)] #type: ignore
         sub_url = res.get('subscription_url') #type: ignore
 
         text_response = f"""
+Это твой ID: {user_id}
+
 Здесь содержаться подписки:
-{sub_url}{"\n"*2}{link}
+{sub_url}{"\n"*2} <code>{link}</code>
 """
         links = await get_links(links_marz)
         await callback.message.edit_text( #type: ignore
             text=text_response,
-            reply_markup=SubMenu.links_keyboard(links=links)
+            reply_markup=SubMenu.links_keyboard(links=links),
+            parse_mode="HTML"
         )

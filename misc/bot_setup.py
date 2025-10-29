@@ -25,12 +25,8 @@ platforms = [
 async def get_links(links: list):
     response = []
     for link in links:
-        logger.info(f"Получили {links}")
         sta = link.find("#")
-        logger.info(f'Это старт {sta}')
         encoded = link[sta+1:]
-        logger.info(f"Это encode {encoded}")
         text = unquote(encoded)
-        logger.info(f"Это text {text}")
         response.append(text)
     return response
