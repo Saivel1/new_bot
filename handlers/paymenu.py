@@ -27,6 +27,7 @@ async def payment_process(callback: CallbackQuery):
     payment = PaymentYoo()
     anymessage = Anymessage()
     mail = await anymessage.order_email()
+    logger.info(mail)
     logger.info(f'Пользователь ID {user_id} Перещёл в оплату')
 
     order_url = await payment.create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
