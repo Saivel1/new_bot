@@ -11,20 +11,9 @@ marz_back = BackendContext(*MARZ_DATA)
 
 
 @dp.callback_query(F.data == "subs")
-async def subs_menu(callback: CallbackQuery):
-    user_id = callback.from_user.id #type: ignore
-    logger.info(f"ID : {user_id} | Нажал кнопку подписка")
-
-    await callback.message.edit_text( #type:ignore
-        text="Меню подписок",
-        reply_markup=SubMenu.main_keyboard()
-    )
-
-
-@dp.callback_query(F.data == "main")
 async def main_subs(callback: CallbackQuery):
     user_id = callback.from_user.id #type: ignore
-    logger.info(f"ID : {user_id} | Нажал Main")
+    logger.info(f"ID : {user_id} | Нажал Subs")
 
     async with marz_back as backend: #type: ignore
         res = await backend.get_user(user_id)
@@ -50,6 +39,8 @@ async def main_subs(callback: CallbackQuery):
 async def process_sub(callback: CallbackQuery):
     sub_id = callback.data.replace("sub_", "") #type: ignore
     user_id = str(callback.from_user.id)
+    logger.info(f"ID : {user_id} | Нажал {callback.data}")
+
 
     async with marz_back as backend: #type: ignore
         res = await backend.get_user(user_id)
@@ -65,8 +56,6 @@ async def process_sub(callback: CallbackQuery):
         sub_url = res.get('subscription_url') #type: ignore
 
         text_response = f"""
-Это твой ID: {user_id}
-
 Здесь содержаться подписки:
 {sub_url}{"\n"*2} <code>{link}</code>
 """
