@@ -21,18 +21,18 @@ platforms = [
     ("Windows", 'windows')
 ]
 
-async def get_links(username, backend):
+async def get_links(username):
     username = str(username)
-    
-    res = await backend.get_user(username)
-    marz_links = res.get("links") #type: ignore
+    async with ctx as backend:
+        res = await backend.get_user(username)
+        marz_links = res.get("links") #type: ignore
 
-    response = []
-    for link in marz_links:
-        sta = link.find("spx=#")
-        encoded = link[sta+5:]
-        text = unquote(encoded)
-        response.append(
-        (text, link)
-        )
-    return response
+        response = []
+        for link in marz_links:
+            sta = link.find("spx=#")
+            encoded = link[sta+5:]
+            text = unquote(encoded)
+            response.append(
+                (text, link)
+            )
+        return response

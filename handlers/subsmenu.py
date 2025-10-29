@@ -37,7 +37,7 @@ async def main_subs(callback: CallbackQuery):
         text_reponse = "Здесь содержаться подписки"
         link = res.get('subscription_url') #type: ignore
         text_reponse += "\n"*2 + f"`{link}`"
-        links = await get_links(username=user_id, backend=backend)
+        links = await get_links(username=user_id)
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
