@@ -44,9 +44,10 @@ async def change_status(order_id: str, status: str):
     st = status.split(".")[1]
     async with async_session() as session:
         repo = BaseRepository(session=session, model=PaymentData)
-        await repo.update_one({
+        res = await repo.update_one({
             "status": st
         }, payment_id=order_id)
+        return res
 
 @app.post("/webhook")
 async def webhook(request: Request):
@@ -66,11 +67,16 @@ async def yoo_kassa(request: Request):
         logger.warning(f'{order_id} Response: {data}')
         return {"status": "ne-ok"}
     
-    await change_status(order_id=order_id, status=event)
+    obj = await change_status(order_id=order_id, status=event)
     obj_data = data.get("object", {})
     pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
 
     logger.info(f'{pay_id} | {pay_am}')
+    await bot.send_message(
+        chat_id=obj.user_id, #type: ignore
+        text=f"Оплата прошла успешно на сумму: {obj.amount}" #type: ignore
+    )
+    await bot.send_animation(chat_id=obj.user_id, animation="https://media.giphy.com/media/111ebonMs90YLu/giphy.gif") #type: ignore
     return {"ok": True}
 
 
