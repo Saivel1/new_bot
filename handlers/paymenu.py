@@ -7,7 +7,7 @@ from logger_setup import logger
 from yooka.payments import PaymentYoo
 from yooka.mails import Anymessage
 from aiogram.types import InlineKeyboardButton
-from db.db_models import PaymentIDs
+from db.db_models import PaymentData
 from db.database import async_session
 from repositories.base import BaseRepository
 
@@ -46,10 +46,11 @@ async def payment_process(callback: CallbackQuery):
 
 
     async with async_session() as session:
-        repo = BaseRepository(session=session, model=PaymentIDs)
+        repo = BaseRepository(session=session, model=PaymentData)
         await repo.create({
             "payment_id": order_id,
-            "user_id": user_id
+            "user_id": user_id,
+            "amount": amount
         })
 
     reply_text = f"""
