@@ -40,6 +40,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+async def change_status(order_id: str, status: str):
+    st = status.split(".")[1]
+    async with async_session() as session:
+        repo = BaseRepository(session=session, model=PaymentData)
+        await repo.update_one({
+            "status": st
+        }, payment_id=order_id)
+
 @app.post("/webhook")
 async def webhook(request: Request):
     data = await request.json()
@@ -58,21 +66,10 @@ async def yoo_kassa(request: Request):
         logger.warning(f'{order_id} Response: {data}')
         return {"status": "ne-ok"}
     
-    async with async_session() as session:
-        repo = BaseRepository(session=session, model=PaymentData)
-        if event == 'payment.succeeded':
-            await repo.update_one(
-                {"status": "succeeded"},
-                payment_id=order_id
-            )
-        elif event == "payment.canceled":
-            await repo.update_one(
-                {"status": "succeeded"},
-                payment_id=order_id
-            )
+    await change_status(order_id=order_id, status=event)
+    obj_data = data.get("object", {})
+    pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
 
-    pay_id = data.get("object", {}).get("id")
-    pay_am = data.get("object", {}).get("amount")
     logger.info(f'{pay_id} | {pay_am}')
     return {"ok": True}
 
