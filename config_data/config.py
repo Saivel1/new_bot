@@ -17,6 +17,15 @@ class Settings(BaseSettings):
     ANY_TOKEN: str
     ANY_SITE: str
     ANY_DOMAIN: str
+
+    #DB SetUp
+    DB_NAME: str
+
+    @property
+    def DATABASE_URL_aiosqlite(self):
+        # sqlite+aiosqlite:///database.db (относительный путь)
+        # sqlite+aiosqlite:////absolute/path/to/database.db (абсолютный путь)
+        return f"sqlite+aiosqlite:///{self.DB_NAME}"
         
     model_config = SettingsConfigDict(
         env_file=str(BASE_DIR / ".env"),

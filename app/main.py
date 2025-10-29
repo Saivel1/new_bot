@@ -4,6 +4,8 @@ from bot_instance import bot, dp
 from config_data.config import settings
 from contextlib import asynccontextmanager
 from logger_setup import logger
+from db.database import engine
+from db.db_models import Base
 
 
 # Импортируем handlers для регистрации
@@ -21,6 +23,9 @@ async def lifespan(app: FastAPI):
         drop_pending_updates=True
     )
     print(f"Webhook установлен: {settings.WEBHOOK_URL}")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
     
     yield  # Приложение работает
     
@@ -45,7 +50,6 @@ async def webhook(request: Request):
 @app.post("/pay")
 async def yoo_kassa(request: Request):
     data = await request.json()
-    logger.info(data)
     return {"ok": True}
 
 
