@@ -1,5 +1,6 @@
 from urllib.parse import unquote
 from marzban.backend import MARZ_DATA, BackendContext
+from logger_setup import logger
 
 ctx = BackendContext(*MARZ_DATA)
 
@@ -22,11 +23,14 @@ platforms = [
 ]
 
 async def get_links(links: list):
-
     response = []
     for link in links:
-        sta = link.find("spx=#")
-        encoded = link[sta+5:]
+        logger.info(f"Получили {links}")
+        sta = link.find("#")
+        logger.info(f'Это старт {sta}')
+        encoded = link[sta+1:]
+        logger.info(f"Это encode {encoded}")
         text = unquote(encoded)
+        logger.info(f"Это text {text}")
         response.append(text)
     return response
