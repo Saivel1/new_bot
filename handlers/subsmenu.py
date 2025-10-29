@@ -5,9 +5,14 @@ from keyboards.deps import BackButton
 from aiogram.types import CallbackQuery
 from logger_setup import logger
 from marzban.backend import BackendContext, MARZ_DATA
-from misc.bot_setup import get_links
+from misc.utils import to_link
 
 marz_back = BackendContext(*MARZ_DATA)
+text_pattern = """
+Здесь содержаться подписки:
+(Нажмите для копирования)
+
+"""
 
 
 @dp.callback_query(F.data == "subs")
@@ -22,16 +27,14 @@ async def main_subs(callback: CallbackQuery):
             text="Пусто",
             reply_markup=BackButton.back_subs()
         )
-        
-        text_reponse = "Здесь содержаться подписки"
-        link = res.get('subscription_url') #type: ignore
-        text_reponse += "\n"*2 + f"`{link}`"
-        links_marz = res.get("links") #type: ignore
-        links = await get_links(links_marz)
+        data = await to_link(res) #type: ignore
+
+        text_reponse = text_pattern
+        text_reponse += "\n"*2 + f"`{data.sub_link}`" #type: ignore
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
-            reply_markup=SubMenu.links_keyboard(links),
+            reply_markup=SubMenu.links_keyboard(data.titles), #type: ignore
             parse_mode="MARKDOWN"
         )
 
@@ -50,19 +53,19 @@ async def process_sub(callback: CallbackQuery):
             reply_markup=BackButton.back_subs()
         )
         logger.info(res)
+        
+        data = await to_link(res) #type: ignore
 
-        links_marz = res.get("links") #type: ignore
-        link = res.get("links")[int(sub_id)] #type: ignore
-        sub_url = res.get('subscription_url') #type: ignore
+        links_marz = data.links #type: ignore
+        sub_url = data.sub_link #type: ignore
 
-        text_response = f"""
-Здесь содержаться подписки:
+        link = links_marz[int(sub_id)] #type: ignore
 
+        text_response = f"""{text_pattern}
 <code>{sub_url}</code>{"\n"*2} <code>{link}</code>
 """
-        links = await get_links(links_marz)
         await callback.message.edit_text( #type: ignore
             text=text_response,
-            reply_markup=SubMenu.links_keyboard(links=links),
+            reply_markup=SubMenu.links_keyboard(links=data.titles), #type: ignore
             parse_mode="HTML"
         )
