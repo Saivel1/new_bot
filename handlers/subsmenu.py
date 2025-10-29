@@ -51,9 +51,7 @@ async def process_sub(callback: CallbackQuery):
             await callback.message.edit_text( #type: ignore
             text="Пусто",
             reply_markup=BackButton.back_subs()
-        )
-        logger.info(res)
-        
+        )        
         data = await to_link(res) #type: ignore
 
         links_marz = data.links #type: ignore
@@ -62,7 +60,7 @@ async def process_sub(callback: CallbackQuery):
         link = links_marz[int(sub_id)] #type: ignore
 
         text_response = f"""{text_pattern}
-<code>{sub_url}</code>{"\n"*2} <code>{link}</code>
+<code>{sub_url}</code>{"\n"*2} Ключ: \n<code>{link}</code>
 """
         await callback.message.edit_text( #type: ignore
             text=text_response,
