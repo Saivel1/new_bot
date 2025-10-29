@@ -18,7 +18,6 @@ import handlers.subsmenu
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     await bot.set_webhook(
         url=settings.WEBHOOK_URL,
         drop_pending_updates=True
@@ -28,9 +27,8 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
     
-    yield  # Приложение работает
+    yield
     
-    # Shutdown
     await bot.delete_webhook()
     await bot.session.close()
     print("Бот остановлен")
@@ -47,7 +45,11 @@ async def change_status(order_id: str, status: str):
         res = await repo.update_one({
             "status": st
         }, payment_id=order_id)
+        if st == 'canceled':
+            await repo.delete_where(payment_id=order_id)
+            return False
         return res
+
 
 @app.post("/webhook")
 async def webhook(request: Request):
@@ -66,8 +68,13 @@ async def yoo_kassa(request: Request):
     if order_id == {}:
         logger.warning(f'{order_id} Response: {data}')
         return {"status": "ne-ok"}
-    raise ValueError
+    
+
     obj = await change_status(order_id=order_id, status=event)
+    if not obj:
+        logger.info(f"Order: {order_id} was canceled or TimeOut")
+        return {"response": "Order was canceled"}
+    
     obj_data = data.get("object", {})
     pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
 
