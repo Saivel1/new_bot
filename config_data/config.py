@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     M_DIGITAL_URL: str
     M_DIGITAL_U: str
     M_DIGITAL_P: str
+
+    #Anymessage
+    ANY_TOKEN: str
+    ANY_SITE: str
+    ANY_DOMAIN: str
         
     model_config = SettingsConfigDict(
         env_file=str(BASE_DIR / ".env"),

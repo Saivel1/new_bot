@@ -33,6 +33,3 @@ alembic/versions/*.pyc
 .env
 
 test.py
-
-/yooka
-yooka

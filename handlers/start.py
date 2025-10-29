@@ -2,7 +2,6 @@ from aiogram import F, types
 from aiogram.filters import Command
 from bot_instance import dp
 from keyboards.markup import MainKeyboard
-from keyboards.builder import PayMenu, SubMenu, InstructionMenu
 from aiogram.types import CallbackQuery
 from logger_setup import logger
 
