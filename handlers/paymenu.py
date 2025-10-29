@@ -7,8 +7,6 @@ from logger_setup import logger
 from yooka.payments import PaymentYoo
 from yooka.mails import Anymessage
 
-payment = PaymentYoo()
-anymassage = Anymessage()
 
 
 @dp.callback_query(F.data == "pay_menu")
@@ -26,7 +24,9 @@ async def pay_menu(callback: CallbackQuery):
 async def payment_process(callback: CallbackQuery):
     user_id = str(callback.from_user.id)
     amount = int(callback.data.replace("pay_", "")) #type: ignore
-    mail = await anymassage.order_email()
+    payment = PaymentYoo()
+    anymessage = Anymessage()
+    mail = await anymessage.order_email()
     logger.info(f'Пользователь ID {user_id} Перещёл в оплату')
 
     order_url = await payment.create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
