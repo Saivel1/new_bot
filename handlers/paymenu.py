@@ -37,8 +37,9 @@ async def payment_process(callback: CallbackQuery):
 {order_url}
 """
     to_pay = [InlineKeyboardButton(text="Оплатить", url=order_url)]
+    keyboard = BackButton.back_pays().inline_keyboard.insert(0, to_pay)
 
     await callback.message.edit_text( # type: ignore
         text=reply_text,
-        reply_markup=BackButton.back_pays().inline_keyboard.append(to_pay)
+        reply_markup=keyboard
     )
