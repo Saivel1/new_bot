@@ -3,7 +3,7 @@ from urllib.parse import unquote
 from dataclasses import dataclass
 
 @dataclass(slots=True)
-class LinksSub(BaseModel):
+class LinksSub:
     sub_link: str
     links: list
     titles: list
