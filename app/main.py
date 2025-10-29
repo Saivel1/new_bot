@@ -66,17 +66,17 @@ async def yoo_kassa(request: Request):
     if order_id == {}:
         logger.warning(f'{order_id} Response: {data}')
         return {"status": "ne-ok"}
-    
+    raise ValueError
     obj = await change_status(order_id=order_id, status=event)
     obj_data = data.get("object", {})
     pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
 
     logger.info(f'{pay_id} | {pay_am}')
+
     await bot.send_message(
         chat_id=obj.user_id, #type: ignore
         text=f"Оплата прошла успешно на сумму: {obj.amount}" #type: ignore
     )
-    await bot.send_animation(chat_id=obj.user_id, animation="https://media.giphy.com/media/111ebonMs90YLu/giphy.gif") #type: ignore
     return {"ok": True}
 
 
