@@ -5,6 +5,7 @@ from keyboards.deps import BackButton
 from aiogram.types import CallbackQuery
 from logger_setup import logger
 from marzban.backend import BackendContext, MARZ_DATA
+from misc.bot_setup import get_links
 
 marz_back = BackendContext(*MARZ_DATA)
 
@@ -36,11 +37,10 @@ async def main_subs(callback: CallbackQuery):
         text_reponse = "Здесь содержаться подписки"
         link = res.get('subscription_url') #type: ignore
         text_reponse += "\n"*2 + f"`{link}`"
-        for i in range(len(res.get("links"))): #type: ignore
-            text_reponse += f"{'\n' * 2 } Подписка {i + 1}: \n `{res.get('links')[i]}`" #type: ignore
+        links = await get_links(username=user_id, backend=backend)
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
-            reply_markup=BackButton.back_subs(),
+            reply_markup=SubMenu.links_keyboard(links),
             parse_mode="MARKDOWN"
         )

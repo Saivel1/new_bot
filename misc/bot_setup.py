@@ -1,3 +1,7 @@
+from urllib.parse import unquote
+from marzban.backend import MARZ_DATA, BackendContext
+
+ctx = BackendContext(*MARZ_DATA)
 
 prices = [
     ("50 рублей", '50_r'),
@@ -16,3 +20,19 @@ platforms = [
     ("IOS | MacOS", 'ios'),
     ("Windows", 'windows')
 ]
+
+async def get_links(username, backend):
+    username = str(username)
+    
+    res = await backend.get_user(username)
+    marz_links = res.get("links") #type: ignore
+
+    response = []
+    for link in marz_links:
+        sta = link.find("spx=#")
+        encoded = link[sta+5:]
+        text = unquote(encoded)
+        response.append(
+        (text, link)
+        )
+    return response
