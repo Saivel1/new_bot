@@ -30,13 +30,14 @@ async def main_subs(callback: CallbackQuery):
         data = await to_link(res) #type: ignore
 
         text_reponse = text_pattern
-        text_reponse += "\n"*2 + f"`{data.sub_link}`" #type: ignore
+        text_reponse += "\n" + f"`{data.sub_link}`" #type: ignore
 
         await callback.message.edit_text( #type: ignore
             text=text_reponse,
             reply_markup=SubMenu.links_keyboard(data.titles), #type: ignore
             parse_mode="MARKDOWN"
         )
+
 
 @dp.callback_query(F.data.startswith("sub_"))
 async def process_sub(callback: CallbackQuery):

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     # Bot
     BOT_TOKEN: str
     WEBHOOK_URL: str
+    TRIAL_DAYS: int
 
     #Marzban
     M_DIGITAL_URL: str
@@ -24,6 +25,7 @@ class Settings(BaseSettings):
     #YooKassa
     ACCOUNT_ID: int
     SECRET_KEY: str
+
 
     @property
     def DATABASE_URL_aiosqlite(self):

@@ -3,6 +3,11 @@ from dataclasses import dataclass
 from repositories.base import BaseRepository
 from db.database import async_session
 from db.db_models import UserOrm
+from marzban.backend import BackendContext
+from datetime import datetime
+from misc.bot_setup import ctx
+
+
 
 @dataclass(slots=True)
 class LinksSub:
@@ -40,3 +45,20 @@ async def get_user(user_id):
         user_repo = BaseRepository(session=session, model=UserOrm)
         res = await user_repo.get_one(user_id=user_id)
         return res
+    
+
+async def modify_user(username, expire: datetime):
+    data = datetime.timestamp(expire)
+    data = int(data)
+    username = str(username)
+
+
+    async with ctx as backend:
+        user = await backend.get_user(id=username)
+        if not user:
+            await backend.create_user(username=username)
+
+        await backend.modify_user(
+            id=username, 
+            expire=data
+            )

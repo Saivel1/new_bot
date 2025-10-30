@@ -71,7 +71,7 @@ class BackendContext:
             )
 
             if request.status not in (200, 201):
-                logger.warning(f"Ошибка в редактирование пользовтеля {id}")
+                logger.warning(f"Ошибка в получении пользовтеля {id}")
                 return None
 
             json_data = await request.json()
