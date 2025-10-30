@@ -75,7 +75,6 @@ class BackendContext:
                 return None
 
             json_data = await request.json()
-            logger.info(json_data)
             return json_data
     
 
