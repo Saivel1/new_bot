@@ -6,8 +6,7 @@ from misc.utils import get_user, modify_user, calculate_expire, create_user
 from db.database import async_session
 from db.db_models import UserOrm
 from repositories.base import BaseRepository
-from marzban.backend import MARZ_DATA, BackendContext
-from datetime import datetime, timedelta
+from datetime import timedelta
 from config_data.config import settings
 
 
@@ -38,12 +37,10 @@ async def trial_activate(callback: CallbackQuery):
     new_expire = calculate_expire(old_expire=old_expire)    
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
 
+    
     await modify_user(username=user_id, expire=add_days)
-    try:
-        await callback.message.edit_text( #type: ignore
+
+    await callback.answer()
+    await callback.message.edit_text( #type: ignore
             text='Пробный период активирован'
-        )
-    except:
-        await callback.message.answer( #type: ignore
-            text='Пробный период активирован'
-        )
+    )

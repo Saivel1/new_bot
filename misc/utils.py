@@ -3,9 +3,8 @@ from dataclasses import dataclass
 from repositories.base import BaseRepository
 from db.database import async_session
 from db.db_models import UserOrm
-from marzban.backend import BackendContext
 from datetime import datetime
-from marzban.backend import MARZ_DATA, BackendContext
+from marz.backend import marzban_client
 from misc.bot_setup import add_monthes
 from datetime import timedelta
 from logger_setup import logger
@@ -56,15 +55,14 @@ async def modify_user(username, expire: datetime):
     username = str(username)
 
 
-    async with BackendContext(*MARZ_DATA) as backend:
-        user = await backend.get_user(id=username)
-        if not user:
-            await backend.create_user(username=username)
+    user = await marzban_client.get_user(user_id=username)
+    if not user:
+        await marzban_client.create_user(username=username)
 
-        await backend.modify_user(
-            id=username, 
-            expire=data
-        )
+    await marzban_client.modify_user(
+        user_id=username, 
+        expire=data
+    )
     
     async with async_session() as session:
         repo = BaseRepository(session=session, model=UserOrm)

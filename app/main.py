@@ -93,12 +93,14 @@ async def yoo_kassa(request: Request):
     try:
         await modify_user(username=obj.user_id, expire=new_expire)
         logger.info(f"Для пользователя {obj.user_id} оплата и обработка прошли успешно.")
+
         await bot.send_message(
         chat_id=obj.user_id, #type: ignore
         text=f"Оплата прошла успешно на сумму: {obj.amount}", #type: ignore
         reply_markup=BackButton.back_start()
         )
     except Exception as e:
+        logger.warning(e)
         await bot.send_message(
             text="Возникла ошибка, напиши в поддержку /help",
              chat_id=obj.user_id
