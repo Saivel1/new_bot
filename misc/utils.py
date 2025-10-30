@@ -5,7 +5,8 @@ from db.database import async_session
 from db.db_models import UserOrm
 from marzban.backend import BackendContext
 from datetime import datetime
-from misc.bot_setup import ctx
+from marzban.backend import MARZ_DATA, BackendContext
+
 
 
 
@@ -53,7 +54,7 @@ async def modify_user(username, expire: datetime):
     username = str(username)
 
 
-    async with ctx as backend:
+    async with BackendContext(*MARZ_DATA) as backend:
         user = await backend.get_user(id=username)
         if not user:
             await backend.create_user(username=username)
