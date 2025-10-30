@@ -70,6 +70,8 @@ async def modify_user(username, expire: datetime):
             "subscription_end": expire
         }, user_id=username)
 
+    return True
+
 
 def new_date(expire: datetime, amount: str):
     amount = amount.split(".")[0]

@@ -114,9 +114,9 @@ class MarzbanClient:
             ) as response:
                 
                 if response.status in (200, 201):
-                    await response.json()
+                    json_data = await response.json()
                     logger.info(f"Пользователь {user_id} изменён")
-                    return True
+                    return json_data
                 else:
                     logger.warning(f"Ошибка в редактировании пользователя {user_id}: {response.status}")
                     return None
