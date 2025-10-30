@@ -64,18 +64,18 @@ class BackendContext:
         id = str(id)
         get_route = f"/api/user/{id}"
 
-        async with self.session as session: #type: ignore
-            request = await session.get(
-                url= self.base_url + get_route,
-                headers=self.headers
-            )
 
-            if request.status not in (200, 201):
-                logger.warning(f"Ошибка в получении пользовтеля {id}")
-                return None
+        request = await self.session.get( #type: ignore
+            url= self.base_url + get_route,
+            headers=self.headers
+        )
 
-            json_data = await request.json()
-            return json_data
+        if request.status not in (200, 201):
+            logger.warning(f"Ошибка в получении пользовтеля {id}")
+            return None
+
+        json_data = await request.json()
+        return json_data
     
 
     async def modify_user(self, id: str, expire: int):
@@ -85,20 +85,19 @@ class BackendContext:
             "expire": expire
         }
 
-        async with self.session as session: #type: ignore
-            request = await session.put(
-                url= self.base_url + get_route,
-                headers=self.headers,
-                json=data
-            )
+        request = await self.session.put( #type: ignore
+            url= self.base_url + get_route,
+            headers=self.headers,
+            json=data
+        )
 
-            if request.status not in (200, 201):
-                logger.warning(f"Ошибка в редактирование пользовтеля {id}")
-                return None
-            
-            json_data = await request.json()
-            logger.info(json_data)
-            return json_data
+        if request.status not in (200, 201):
+            logger.warning(f"Ошибка в редактирование пользовтеля {id}")
+            return None
+        
+        json_data = await request.json()
+        logger.info(json_data)
+        return json_data
     
     async def create_user(self, username):
         username = str(username)
@@ -118,17 +117,16 @@ class BackendContext:
             }
         }
 
-        async with self.session as session: #type: ignore
-            request = await session.post(
-                url= self.base_url + get_route,
-                headers=self.headers, 
-                json=data
-            )
-            
-            if request.status not in (200, 201):
-                logger.warning(f"Ошибка в создании пользовтеля")
-                return None
+        request = await self.session.post( #type: ignore
+            url= self.base_url + get_route,
+            headers=self.headers, 
+            json=data
+        )
+        
+        if request.status not in (200, 201):
+            logger.warning(f"Ошибка в создании пользовтеля")
+            return None
 
-            json_data = await request.json()
-            logger.info(json_data)
-            return json_data
+        json_data = await request.json()
+        logger.info(json_data)
+        return json_data
