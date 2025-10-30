@@ -92,3 +92,16 @@ def calculate_expire(old_expire):
         new_expire = current_time
     
     return new_expire
+
+async def create_user(user_id, username: str | None = None):
+    user_id = str(user_id)
+    async with async_session() as session:
+        user_repo = BaseRepository(session=session, model=UserOrm)
+        data = {
+            "user_id": user_id
+        }
+        if username:
+            data["username"] = username
+
+        res = await user_repo.create(data)
+        return res
