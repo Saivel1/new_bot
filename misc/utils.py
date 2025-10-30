@@ -67,6 +67,7 @@ async def modify_user(username, expire: datetime):
         user = await marzban_client.create_user(username=username)
     
     link = await get_user_in_links(user_id=username)
+    logger.info(link)
     if not link:
         async with async_session() as session:
             repo = BaseRepository(session=session, model=LinksOrm)
@@ -75,13 +76,15 @@ async def modify_user(username, expire: datetime):
                 "user_id": username,
                 "uuid": user_uuid,
             }
-            sub_url: str = user['subscription_url'] #type: ignore
+            sub_url = user['subscription_url'] #type: ignore
+            logger.info(data_panel)
             if sub_url.find("world") != -1:
                 data_panel["panel_1"] = sub_url
             else:
                 data_panel["panel_2"] = sub_url
-
-            await repo.create(data_panel)
+            logger.info(data_panel)
+            res = await repo.create(data_panel)
+            logger.info(res)
 
         await marzban_client.modify_user(
             user_id=username, 
