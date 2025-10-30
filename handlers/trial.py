@@ -13,8 +13,8 @@ from config_data.config import settings
 
 @dp.callback_query(F.data == 'trial')
 async def trial_activate(callback: CallbackQuery):
-    await callback.answer()
     
+
     user_id = callback.from_user.id 
     logger.info(f'Пользователь {user_id} нажал пробный период')
 
@@ -25,6 +25,8 @@ async def trial_activate(callback: CallbackQuery):
         )
         raise ValueError
     
+    if user.trial_used:
+        return
 
     async with async_session() as session:
         repo = BaseRepository(session=session, model=UserOrm)
@@ -38,7 +40,11 @@ async def trial_activate(callback: CallbackQuery):
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
 
     await modify_user(username=user_id, expire=add_days)
-
-    await callback.message.edit_text( #type: ignore
-        text='Пробный период активирован'
-    )
+    try:
+        await callback.message.edit_text( #type: ignore
+            text='Пробный период активирован'
+        )
+    except:
+        await callback.message.answer( #type: ignore
+            text='Пробный период активирован'
+        )
