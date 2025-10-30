@@ -4,7 +4,6 @@ from sqlalchemy import func, ForeignKey
 
 
 class Base(DeclarativeBase):
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     pass
 
 
