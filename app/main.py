@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import RedirectResponse
 from aiogram import types
 from bot_instance import bot, dp
 from config_data.config import settings
@@ -8,7 +9,8 @@ from db.database import engine, async_session
 from db.db_models import Base, PaymentData
 from repositories.base import BaseRepository
 from keyboards.deps import BackButton
-from misc.utils import modify_user, calculate_expire, get_user, new_date
+from misc.utils import modify_user, calculate_expire, get_user, new_date, get_links_of_panels
+import aiohttp, asyncio
 
 
 # Импортируем handlers для регистрации
@@ -107,6 +109,38 @@ async def yoo_kassa(request: Request):
         )
 
     return {"ok": True}
+
+
+@app.get("/sub/{uuid}")
+async def process_sub(request: Request, uuid: str):
+    """Проверяем все панели параллельно"""
+    
+    links = await get_links_of_panels(uuid=uuid)
+    
+    if not links:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+    
+    async def check_panel(link: str) -> tuple[bool, str]:
+        """Проверить доступность панели"""
+        try:
+            timeout = aiohttp.ClientTimeout(total=3.0)
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                response = await session.get(url=link)
+                return (response.status in (200, 201), link)
+        except Exception:
+            return (False, link)
+    
+    # Проверяем все панели параллельно
+    results = await asyncio.gather(*[check_panel(link) for link in links])
+    
+    # Выбираем первую рабочую
+    for is_available, link in results:
+        if is_available:
+            logger.info(f"Подписка отдана: {link}")
+            return RedirectResponse(url=link, status_code=302)
+    
+    # Все недоступны
+    raise HTTPException(status_code=503, detail="All panels unavailable")
 
 
 @app.get("/")

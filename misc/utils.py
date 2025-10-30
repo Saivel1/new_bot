@@ -57,6 +57,15 @@ async def get_user_in_links(user_id):
         return res
     
 
+async def get_links_of_panels(uuid: str) -> list | None:
+    async with async_session() as session:
+        user_repo = BaseRepository(session=session, model=LinksOrm)
+        res = await user_repo.get_one(uuid=uuid)
+        if res is None:
+            return None
+        return [res.panel_1, res.panel_2]
+    
+
 async def modify_user(username, expire: datetime):
     data = datetime.timestamp(expire)
     data = int(data)
