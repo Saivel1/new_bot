@@ -99,7 +99,7 @@ class MarzbanClient:
             logger.error(f"Исключение при получении пользователя {user_id}: {e}")
             return None
     
-    async def modify_user(self, user_id: str, expire: int) -> Optional[Dict[str, Any]]:
+    async def modify_user(self, user_id: str, expire: int):
         """Изменить данные пользователя"""
         try:
             await self._ensure_token()
@@ -114,9 +114,9 @@ class MarzbanClient:
             ) as response:
                 
                 if response.status in (200, 201):
-                    json_data = await response.json()
-                    logger.info(f"Пользователь {user_id} изменён: {json_data}")
-                    return json_data
+                    await response.json()
+                    logger.info(f"Пользователь {user_id} изменён")
+                    return True
                 else:
                     logger.warning(f"Ошибка в редактировании пользователя {user_id}: {response.status}")
                     return None
