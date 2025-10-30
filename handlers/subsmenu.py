@@ -24,13 +24,16 @@ async def main_subs(callback: CallbackQuery):
     if res is None:
         await callback.message.edit_text( #type: ignore
         text="У вас пока нет оплаченной подписки.",
-        reply_markup=BackButton.back_subs()
+        reply_markup=BackButton.back_start()
         )
         return
     sub_link = res.uuid
 
     text_reponse = text_pattern
     text_reponse += "\n" + f"`{s.IN_SUB_LINK}{sub_link}`" #type: ignore
+
+    res = await marzban_client.get_user(user_id)
+    data = await to_link(res) #type: ignore
 
     await callback.message.edit_text( #type: ignore
         text=text_reponse,
