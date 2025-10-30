@@ -41,18 +41,7 @@ async def trial_activate(callback: CallbackQuery):
     
 
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
-    data = datetime.timestamp(add_days)
-    data = int(data)
-    username = str(user_id)
-    async with BackendContext(*MARZ_DATA) as backend:
-        user = await backend.get_user(id=username)
-        if not user:
-            await backend.create_user(username=username)
-
-        await backend.modify_user(
-            id=username, 
-            expire=data
-            )
+    await modify_user(username=user_id, expire=add_days)
 
     await callback.message.edit_text( #type: ignore
         text='Пробный период активирован'
