@@ -1,6 +1,8 @@
-from pydantic import BaseModel
 from urllib.parse import unquote
 from dataclasses import dataclass
+from repositories.base import BaseRepository
+from db.database import async_session
+from db.db_models import UserOrm
 
 @dataclass(slots=True)
 class LinksSub:
@@ -30,3 +32,11 @@ async def to_link(lst_data: dict):
         links=links,
         titles=titles
     )
+
+
+async def get_user(user_id):
+    user_id = str(user_id)
+    async with async_session() as session:
+        user_repo = BaseRepository(session=session, model=UserOrm)
+        res = await user_repo.get_one(user_id=user_id)
+        return res
