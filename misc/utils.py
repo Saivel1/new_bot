@@ -48,6 +48,13 @@ async def get_user(user_id):
         user_repo = BaseRepository(session=session, model=UserOrm)
         res = await user_repo.get_one(user_id=user_id)
         return res
+
+async def get_user_in_links(user_id):
+    user_id = str(user_id)
+    async with async_session() as session:
+        user_repo = BaseRepository(session=session, model=LinksOrm)
+        res = await user_repo.get_one(user_id=user_id)
+        return res
     
 
 async def modify_user(username, expire: datetime):
@@ -59,7 +66,7 @@ async def modify_user(username, expire: datetime):
     if not await marzban_client.get_user(user_id=username):
         user = await marzban_client.create_user(username=username)
     
-    link = await get_user(user_id=username)
+    link = await get_user_in_links(user_id=username)
     if not link:
         async with async_session() as session:
             repo = BaseRepository(session=session, model=LinksOrm)
