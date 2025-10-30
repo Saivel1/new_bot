@@ -38,7 +38,7 @@ async def trial_activate(callback: CallbackQuery):
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
 
     await callback.answer()
-    if await modify_user(username=user_id, expire=add_days):
+    if await modify_user(username=user_id, expire=add_days) is not None:
         await callback.message.edit_text( #type: ignore
             text='Пробный период активирован'
         )
