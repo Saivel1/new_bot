@@ -8,6 +8,7 @@ from datetime import datetime
 from marzban.backend import MARZ_DATA, BackendContext
 from misc.bot_setup import add_monthes
 from datetime import timedelta
+from logger_setup import logger
 
 MONTH = 30
 
@@ -64,6 +65,12 @@ async def modify_user(username, expire: datetime):
             id=username, 
             expire=data
         )
+    
+    async with async_session() as session:
+        repo = BaseRepository(session=session, model=UserOrm)
+        await repo.update_one({
+            "subscription_end": data
+        }, user_id=username)
 
 
 def new_date(expire: datetime, amount: str):
