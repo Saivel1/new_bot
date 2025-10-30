@@ -14,6 +14,7 @@ import handlers.start
 import handlers.instructions
 import handlers.paymenu
 import handlers.subsmenu
+import handlers.trial
 
 
 @asynccontextmanager
