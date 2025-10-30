@@ -39,6 +39,7 @@ async def trial_activate(callback: CallbackQuery):
 
     await callback.answer()
     new_data = await modify_user(username=user_id, expire=add_days)
+    logger.critical(new_data)
     if new_data:
         await callback.message.edit_text( #type: ignore
             text='Пробный период активирован'
