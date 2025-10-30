@@ -64,11 +64,12 @@ async def modify_user(username, expire: datetime):
             id=username, 
             expire=data
         )
-        
 
-def new_date(expire: datetime, amount):
-    amount = int(amount)
-    cnt_monthes = add_monthes.get(amount)
+
+def new_date(expire: datetime, amount: str):
+    amount = amount.split(".")[0]
+    amou = int(amount)
+    cnt_monthes = add_monthes.get(amou)
     
     return expire + timedelta(days=cnt_monthes*MONTH) #type: ignore
 
