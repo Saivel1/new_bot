@@ -48,10 +48,10 @@ async def call_start(callback: CallbackQuery):
     if user is None:
         await callback.message.edit_text(text="Возникла ошибка")# type: ignore
     elif user.trial_used == False:    
-        await callback.message.answer(f"Привет! Твой ID: {callback.from_user.id}", # type: ignore
+        await callback.message.edit_text(f"Привет! Твой ID: {callback.from_user.id}", # type: ignore
                              reply_markup=MainKeyboard.main_keyboard_with_trial())
     else:
-        await callback.message.answer(f"Привет! Твой ID: {callback.from_user.id}", # type: ignore
+        await callback.message.edit_text(f"Привет! Твой ID: {callback.from_user.id}", # type: ignore
                              reply_markup=MainKeyboard.main_keyboard())
 
 
