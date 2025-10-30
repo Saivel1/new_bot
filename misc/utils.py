@@ -6,7 +6,10 @@ from db.db_models import UserOrm
 from marzban.backend import BackendContext
 from datetime import datetime
 from marzban.backend import MARZ_DATA, BackendContext
+from misc.bot_setup import add_monthes
+from datetime import timedelta
 
+MONTH = 30
 
 @dataclass(slots=True)
 class LinksSub:
@@ -60,4 +63,24 @@ async def modify_user(username, expire: datetime):
         await backend.modify_user(
             id=username, 
             expire=data
-            )
+        )
+        
+
+def new_date(expire: datetime, amount):
+    amount = int(amount)
+    cnt_monthes = add_monthes.get(amount)
+    
+    return expire + timedelta(days=cnt_monthes*MONTH) #type: ignore
+
+
+def calculate_expire(old_expire):
+    current_time = datetime.now()
+    
+    if old_expire is None:
+        new_expire = current_time
+    elif old_expire >= current_time:
+        new_expire = old_expire
+    else:
+        new_expire = current_time
+    
+    return new_expire

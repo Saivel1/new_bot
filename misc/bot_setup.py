@@ -18,6 +18,13 @@ platforms = [
     ("Windows", 'windows')
 ]
 
+add_monthes = {
+    50: 1,
+    150: 3,
+    300: 6,
+    600: 12
+}
+
 async def get_links(links: list):
     response = []
     for link in links:

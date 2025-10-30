@@ -7,6 +7,8 @@ from logger_setup import logger
 from db.database import engine, async_session
 from db.db_models import Base, PaymentData
 from repositories.base import BaseRepository
+from keyboards.deps import BackButton
+from misc.utils import modify_user, calculate_expire, get_user, new_date
 
 
 # Импортируем handlers для регистрации
@@ -49,6 +51,8 @@ async def change_status(order_id: str, status: str):
         if st == 'canceled':
             await repo.delete_where(payment_id=order_id)
             return False
+        if st == 'waiting_for_capture':
+            return None
         return res
 
 
@@ -76,15 +80,30 @@ async def yoo_kassa(request: Request):
         logger.info(f"Order: {order_id} was canceled or TimeOut")
         return {"response": "Order was canceled"}
     
+
     obj_data = data.get("object", {})
     pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
 
     logger.info(f'{pay_id} | {pay_am}')
+    user = await get_user(user_id=obj.user_id)
+    expire =  calculate_expire(old_expire=user.subscription_end) #type: ignore
+    new_expire = new_date(expire=expire, amount=pay_am)
 
-    await bot.send_message(
+    
+    try:
+        await modify_user(username=obj.user_id, expire=new_expire)
+        logger.info(f"Для пользователя {obj.user_id} оплата и обработка прошли успешно.")
+        await bot.send_message(
         chat_id=obj.user_id, #type: ignore
-        text=f"Оплата прошла успешно на сумму: {obj.amount}" #type: ignore
-    )
+        text=f"Оплата прошла успешно на сумму: {obj.amount}", #type: ignore
+        reply_markup=BackButton.back_start()
+        )
+    except Exception as e:
+        await bot.send_message(
+            text="Возникла ошибка, напиши в поддержку /help",
+             chat_id=obj.user_id
+        )
+
     return {"ok": True}
 
 

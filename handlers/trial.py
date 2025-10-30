@@ -2,7 +2,7 @@ from aiogram import F
 from bot_instance import dp
 from aiogram.types import CallbackQuery
 from logger_setup import logger
-from misc.utils import get_user, modify_user
+from misc.utils import get_user, modify_user, calculate_expire
 from db.database import async_session
 from db.db_models import UserOrm
 from repositories.base import BaseRepository
@@ -31,16 +31,10 @@ async def trial_activate(callback: CallbackQuery):
         }, user_id=str(user_id))
         old_expire = user.subscription_end #type: ignore
     
-    current_time = datetime.now()
-    if old_expire is None:
-        new_expire = current_time
-    elif old_expire >= current_time:
-        new_expire = old_expire
-    else:
-        new_expire = current_time
-    
 
+    new_expire = calculate_expire(old_expire=old_expire)    
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
+
     await modify_user(username=user_id, expire=add_days)
 
     await callback.message.edit_text( #type: ignore
