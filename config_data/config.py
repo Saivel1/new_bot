@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     ACCOUNT_ID: int
     SECRET_KEY: str
 
+    IN_SUB_LINK: str 
 
     @property
     def DATABASE_URL_aiosqlite(self):

@@ -2,12 +2,13 @@ from urllib.parse import unquote
 from dataclasses import dataclass
 from repositories.base import BaseRepository
 from db.database import async_session
-from db.db_models import UserOrm
+from db.db_models import UserOrm, LinksOrm
 from datetime import datetime
 from marz.backend import marzban_client
 from misc.bot_setup import add_monthes
 from datetime import timedelta
 from logger_setup import logger
+import uuid
 
 MONTH = 30
 
@@ -55,9 +56,22 @@ async def modify_user(username, expire: datetime):
     username = str(username)
 
 
-    user = await marzban_client.get_user(user_id=username)
-    if not user:
-        await marzban_client.create_user(username=username)
+    if not await marzban_client.get_user(user_id=username):
+        user = await marzban_client.create_user(username=username)
+        async with async_session() as session:
+            repo = BaseRepository(session=session, model=LinksOrm)
+            user_uuid = str(uuid.uuid4())
+            data_panel = {
+                "user_id": username,
+                "uuid": user_uuid,
+            }
+            sub_url: str = user['subscription_url'] #type: ignore
+            if sub_url.find("world") != -1:
+                data_panel["panel_1"] = sub_url
+            else:
+                data_panel["panel_2"] = sub_url
+
+            await repo.create(data_panel)
 
     await marzban_client.modify_user(
         user_id=username, 
@@ -105,3 +119,11 @@ async def create_user(user_id, username: str | None = None):
 
         res = await user_repo.create(data)
         return res
+    
+async def get_sub_url(user_id):
+    user_id = str(user_id)
+    async with async_session() as session:
+        repo = BaseRepository(session=session, model=LinksOrm)
+        res = await repo.get_one(user_id=user_id)
+
+    return res

@@ -4,9 +4,6 @@ from bot_instance import dp
 from keyboards.markup import MainKeyboard
 from aiogram.types import CallbackQuery
 from logger_setup import logger
-from db.db_models import UserOrm
-from db.database import async_session
-from repositories.base import BaseRepository
 from misc.utils import get_user, create_user
 
 

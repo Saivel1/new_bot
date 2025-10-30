@@ -31,3 +31,12 @@ class UserOrm(Base):
     
     # Опционально: relationship
     payments: Mapped[list["PaymentData"]] = relationship(back_populates="user")
+
+
+class LinksOrm(Base):
+    __tablename__ = 'links'
+
+    user_id: Mapped[str] = mapped_column(primary_key=True)
+    uuid: Mapped[str]
+    panel_1: Mapped[str]
+    panel_2: Mapped[str]

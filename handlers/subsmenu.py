@@ -5,7 +5,8 @@ from keyboards.deps import BackButton
 from aiogram.types import CallbackQuery
 from logger_setup import logger
 from marz.backend import marzban_client
-from misc.utils import to_link
+from misc.utils import to_link, get_sub_url
+from config_data.config import settings as s
 
 text_pattern = """
 Здесь содержаться подписки:
@@ -19,17 +20,17 @@ async def main_subs(callback: CallbackQuery):
     user_id = str(callback.from_user.id)
     logger.info(f"ID : {user_id} | Нажал Subs")
 
-    res = await marzban_client.get_user(user_id)
+    res = await get_sub_url(user_id)
     if res is None:
         await callback.message.edit_text( #type: ignore
-        text="Пусто",
+        text="У вас пока нет оплаченной подписки.",
         reply_markup=BackButton.back_subs()
         )
         return
-    data = await to_link(res) #type: ignore
+    sub_link = res.uuid
 
     text_reponse = text_pattern
-    text_reponse += "\n" + f"`{data.sub_link}`" #type: ignore
+    text_reponse += "\n" + f"`{s.IN_SUB_LINK}{sub_link}`" #type: ignore
 
     await callback.message.edit_text( #type: ignore
         text=text_reponse,
