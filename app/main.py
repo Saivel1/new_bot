@@ -87,9 +87,9 @@ async def yoo_kassa(request: Request):
     logger.info(f'{pay_id} | {pay_am}')
     user = await get_user(user_id=obj.user_id)
     expire =  calculate_expire(old_expire=user.subscription_end) #type: ignore
-    new_expire = new_date(expire=expire, amount=pay_am)
+    new_expire = new_date(expire=expire, amount=pay_am['value'])
 
-    
+
     try:
         await modify_user(username=obj.user_id, expire=new_expire)
         logger.info(f"Для пользователя {obj.user_id} оплата и обработка прошли успешно.")
