@@ -10,7 +10,6 @@ from marzban.backend import MARZ_DATA, BackendContext
 from datetime import datetime, timedelta
 from config_data.config import settings
 
-ctx = BackendContext(*MARZ_DATA)
 
 @dp.callback_query(F.data == 'trial')
 async def trial_activate(callback: CallbackQuery):
@@ -45,7 +44,7 @@ async def trial_activate(callback: CallbackQuery):
     data = datetime.timestamp(add_days)
     data = int(data)
     username = str(user_id)
-    async with ctx as backend:
+    async with BackendContext(*MARZ_DATA) as backend:
         user = await backend.get_user(id=username)
         if not user:
             await backend.create_user(username=username)
