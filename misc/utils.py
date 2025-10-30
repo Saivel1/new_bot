@@ -62,8 +62,8 @@ async def modify_user(username, expire: datetime):
     data = int(data)
     username = str(username)
 
-
-    if not await marzban_client.get_user(user_id=username):
+    user = await marzban_client.get_user(user_id=username)
+    if not user:
         user = await marzban_client.create_user(username=username)
     
     link = await get_user_in_links(user_id=username)
