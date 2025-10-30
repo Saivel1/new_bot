@@ -8,8 +8,6 @@ from datetime import datetime
 from marzban.backend import MARZ_DATA, BackendContext
 
 
-
-
 @dataclass(slots=True)
 class LinksSub:
     sub_link: str

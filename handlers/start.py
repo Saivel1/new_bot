@@ -27,6 +27,7 @@ async def create_user(user_id: str, username: str | None = None):
 async def cmd_start(message: types.Message):
     user_id = message.from_user.id #type: ignore
     logger.info(f"ID : {user_id} | Ввёл команду /start")
+    
     user = await get_user(user_id)
     if not user:
         await create_user(user_id=user_id, username=message.from_user.username) #type: ignore

@@ -6,10 +6,11 @@ from misc.utils import get_user, modify_user
 from db.database import async_session
 from db.db_models import UserOrm
 from repositories.base import BaseRepository
-from marzban.backend import MARZ_DATA
+from marzban.backend import MARZ_DATA, BackendContext
 from datetime import datetime, timedelta
 from config_data.config import settings
 
+ctx = BackendContext(*MARZ_DATA)
 
 @dp.callback_query(F.data == 'trial')
 async def trial_activate(callback: CallbackQuery):
@@ -39,9 +40,20 @@ async def trial_activate(callback: CallbackQuery):
     else:
         new_expire = current_time
     
-    
+
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
-    await modify_user(username=user_id, expire=add_days)
+    data = datetime.timestamp(add_days)
+    data = int(data)
+    username = str(user_id)
+    async with ctx as backend:
+        user = await backend.get_user(id=username)
+        if not user:
+            await backend.create_user(username=username)
+
+        await backend.modify_user(
+            id=username, 
+            expire=data
+            )
 
     await callback.message.edit_text( #type: ignore
         text='Пробный период активирован'

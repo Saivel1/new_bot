@@ -1,8 +1,4 @@
 from urllib.parse import unquote
-from marzban.backend import MARZ_DATA, BackendContext
-from logger_setup import logger
-
-ctx = BackendContext(*MARZ_DATA)
 
 prices = [
     ("50 рублей", 'pay_50'),
