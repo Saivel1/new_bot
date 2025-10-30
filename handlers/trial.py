@@ -13,6 +13,8 @@ from config_data.config import settings
 
 @dp.callback_query(F.data == 'trial')
 async def trial_activate(callback: CallbackQuery):
+    await callback.answer()
+    
     user_id = callback.from_user.id 
     logger.info(f'Пользователь {user_id} нажал пробный период')
 
