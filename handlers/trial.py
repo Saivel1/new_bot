@@ -37,10 +37,12 @@ async def trial_activate(callback: CallbackQuery):
     new_expire = calculate_expire(old_expire=old_expire)    
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
 
-    
-    await modify_user(username=user_id, expire=add_days)
-
     await callback.answer()
-    await callback.message.edit_text( #type: ignore
+    if await modify_user(username=user_id, expire=add_days):
+        await callback.message.edit_text( #type: ignore
             text='Пробный период активирован'
-    )
+        )
+    else:
+        await callback.message.edit_text( #type: ignore
+                text='Возникла ошибка нажмите /start'
+        )

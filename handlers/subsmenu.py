@@ -24,7 +24,8 @@ async def main_subs(callback: CallbackQuery):
         await callback.message.edit_text( #type: ignore
         text="Пусто",
         reply_markup=BackButton.back_subs()
-    )
+        )
+        return
     data = await to_link(res) #type: ignore
 
     text_reponse = text_pattern
