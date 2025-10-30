@@ -21,6 +21,9 @@ async def trial_activate(callback: CallbackQuery):
         user = await create_user(user_id=user_id, username=callback.from_user.username)
     
     if user.trial_used:
+        await callback.message.edit_text( #type: ignore
+            text='Пробный период уже был активирован'
+        )
         return
 
     async with async_session() as session:
