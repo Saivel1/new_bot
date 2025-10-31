@@ -8,6 +8,7 @@ from db.db_models import UserOrm
 from repositories.base import BaseRepository
 from datetime import timedelta
 from config_data.config import settings
+from keyboards.deps import BackButton
 
 
 @dp.callback_query(F.data == 'trial')
@@ -34,7 +35,7 @@ async def trial_activate(callback: CallbackQuery):
         return
 
     await callback.message.edit_text(text="⏳ Загрузка 50%") #type: ignore
-
+    await callback.message.answer("🎉")
     async with async_session() as session:
         repo = BaseRepository(session=session, model=UserOrm)
         user = await repo.update_one({
@@ -51,7 +52,8 @@ async def trial_activate(callback: CallbackQuery):
 
     if user_modification:
         await callback.message.edit_text( #type: ignore
-            text='Пробный период активирован'
+            text='Пробный период активирован ✅',
+            reply_markup=BackButton.back_start()
         )
     else:
         await callback.message.edit_text( #type: ignore
