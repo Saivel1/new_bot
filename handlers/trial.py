@@ -15,10 +15,17 @@ async def trial_activate(callback: CallbackQuery):
     user_id = callback.from_user.id 
     logger.info(f'Пользователь {user_id} нажал пробный период')
 
+    await callback.message.edit_text(text="⏳ Загрузка 0%")
+
+    await callback.message.edit_text( #type: ignore
+        text="Активируем пробный период"
+    )
+
     user = await get_user(user_id=user_id)
     if not user:
         user = await create_user(user_id=user_id, username=callback.from_user.username)
     
+    await callback.message.edit_text(text="⏳ Загрузка 30%")
     if user.trial_used:
         await callback.answer()
         await callback.message.edit_text( #type: ignore
@@ -26,17 +33,19 @@ async def trial_activate(callback: CallbackQuery):
         )
         return
 
+    await callback.message.edit_text(text="⏳ Загрузка 50%")
+
     async with async_session() as session:
         repo = BaseRepository(session=session, model=UserOrm)
         user = await repo.update_one({
             "trial_used": True
         }, user_id=str(user_id))
         old_expire = user.subscription_end #type: ignore
-    
 
     new_expire = calculate_expire(old_expire=old_expire)    
     add_days = new_expire + timedelta(days=settings.TRIAL_DAYS) #type: ignore
 
+    await callback.message.edit_text(text="✅ Загрузка 100%")
     await callback.answer()
     if await modify_user(username=user_id, expire=add_days):
         await callback.message.edit_text( #type: ignore
