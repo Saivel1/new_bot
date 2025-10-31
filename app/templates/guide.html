@@ -467,6 +467,21 @@
             transition: opacity 0.15s linear;
         }
 
+        /* Фикс мерцания при открытии модала */
+        body.modal-open .platform-card {
+            transform: none !important;
+            transition: none !important;
+        }
+
+        /* Блокируем переходы на карточках при открытии модала */
+        .platform-card * {
+            transition: none !important;
+        }
+
+        .platform-card:hover * {
+            transition: transform 0.3s ease, filter 0.3s ease !important;
+        }
+
         /* Адаптив */
         @media (max-width: 576px) {
             .main-title {
