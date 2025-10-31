@@ -4,7 +4,7 @@ from db.db_models import *
 
 
 engine = create_async_engine(
-    url=settings.DATABASE_URL_aiosqlite
+    url=settings.DATABASE_URL
     )
 
 async_session = async_sessionmaker(
