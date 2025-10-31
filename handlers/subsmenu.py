@@ -5,7 +5,7 @@ from keyboards.deps import BackButton
 from aiogram.types import CallbackQuery
 from logger_setup import logger
 from marz.backend import marzban_client
-from misc.utils import to_link, get_sub_url
+from misc.utils import to_link, get_sub_url, get_user_in_links
 from config_data.config import settings as s
 
 text_pattern = """
@@ -58,7 +58,8 @@ async def process_sub(callback: CallbackQuery):
     data = await to_link(res) #type: ignore
 
     links_marz = data.links #type: ignore
-    sub_url = data.sub_link #type: ignore
+    uuid = await get_user_in_links(user_id=user_id)
+    sub_url = f"{s.IN_SUB_LINK + uuid.uuid}" #type: ignore
 
     link = links_marz[int(sub_id)] #type: ignore
 
