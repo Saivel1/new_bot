@@ -447,6 +447,26 @@
             box-shadow: 0 2px 10px rgba(255, 71, 87, 0.6);
         }
 
+        .platform-card {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Убираем анимацию появления карточек после загрузки */
+        .platform-card.loaded {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease !important;
+        }
+
+        /* Предотвращаем мерцание при открытии модала */
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal-backdrop {
+            transition: opacity 0.15s linear;
+        }
+
         /* Адаптив */
         @media (max-width: 576px) {
             .main-title {
