@@ -9,7 +9,7 @@ from misc.utils import to_link, get_sub_url, get_user_in_links
 from config_data.config import settings as s
 
 text_pattern = """
-🔐 <b>Ваши подписки IV VPN</b>
+🔐 **Ваши подписки IV VPN**
 
 📋 Универсальная ссылка подписки:
 (Нажмите для копирования)
