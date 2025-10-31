@@ -15,10 +15,10 @@ async def instriction_menu(callback: CallbackQuery):
 
     user = await get_user_in_links(user_id=user_id)
     if not user:
-        await callback.answer("Zalupa")
+        await callback.answer("Нужно преобрести подписку или активировать пробный период")
         return
 
-    uuid = ""
+    uuid = user.uuid
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
