@@ -10,6 +10,7 @@ from aiogram.types import InlineKeyboardButton
 from db.db_models import PaymentData
 from db.database import async_session
 from repositories.base import BaseRepository
+from aiogram.types import WebAppInfo
 
 
 async def create_order(amount: int):
@@ -17,9 +18,28 @@ async def create_order(amount: int):
     res = await PaymentYoo().create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
     return res
 
+PAY_MENU_TEXT = """
+💳 <b>Оформление подписки</b>
+
+🪞 <b>IV VPN</b> — ваш безопасный доступ к свободному интернету.
+
+<b>Что входит в подписку:</b>
+✓ Безлимитный трафик
+✓ Высокая скорость
+✓ Все серверы доступны
+✓ Поддержка 24/7
+✓ Полная конфиденциальность
+
+Выберите тариф:
+"""
+
 
 async def keyboard_buld(order_url: str):
-    to_pay = [InlineKeyboardButton(text="Оплатить", url=order_url)]
+    to_pay = [InlineKeyboardButton(
+        text="💳 Перейти к оплате", 
+        web_app=WebAppInfo(url=order_url)
+    )]
+    
     keyboard = BackButton.back_pays()
     keyboard.inline_keyboard.insert(0, to_pay)
     return keyboard
@@ -29,10 +49,10 @@ async def keyboard_buld(order_url: str):
 async def pay_menu(callback: CallbackQuery):
     user_id = callback.from_user.id #type: ignore
     logger.info(f"ID : {user_id} | Нажал на кнопку выбора платежа")
-
     await callback.message.edit_text( #type:ignore
-        text="Меню покупки",
-        reply_markup=PayMenu.main_keyboard()
+        text=PAY_MENU_TEXT,
+        reply_markup=PayMenu.main_keyboard(),
+        parse_mode="HTML"
     )
 
 
