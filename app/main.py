@@ -150,7 +150,7 @@ async def process_sub(request: Request, uuid: str):
 async def vpn_guide(request: Request, user_id: str):
     # Получаем данные пользователя (например, из БД)
     user_data = {
-        "subscription_link": f"https://webhook.ivvpn.world/sub/{user_id}"
+        "subscription_link": f"{settings.IN_SUB_LINK}{user_id}"
     }
     
     return templates.TemplateResponse(
