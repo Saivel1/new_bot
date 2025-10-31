@@ -33,3 +33,4 @@ alembic/versions/*.pyc
 .env
 
 test.py
+try*

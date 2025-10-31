@@ -35,7 +35,6 @@ async def trial_activate(callback: CallbackQuery):
         return
 
     await callback.message.edit_text(text="⏳ Загрузка 50%") #type: ignore
-    await callback.message.answer("🎉")
     async with async_session() as session:
         repo = BaseRepository(session=session, model=UserOrm)
         user = await repo.update_one({

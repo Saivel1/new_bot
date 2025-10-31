@@ -11,6 +11,7 @@ from repositories.base import BaseRepository
 from keyboards.deps import BackButton
 from misc.utils import modify_user, calculate_expire, get_user, new_date, get_links_of_panels
 import aiohttp, asyncio
+from fastapi.templating import Jinja2Templates
 
 
 # Импортируем handlers для регистрации
@@ -20,6 +21,8 @@ import handlers.paymenu
 import handlers.subsmenu
 import handlers.trial
 
+
+templates = Jinja2Templates(directory="app/templates")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -141,6 +144,19 @@ async def process_sub(request: Request, uuid: str):
     
     # Все недоступны
     raise HTTPException(status_code=503, detail="All panels unavailable")
+
+
+@app.get("/vpn-guide/{user_id}")
+async def vpn_guide(request: Request, user_id: str):
+    # Получаем данные пользователя (например, из БД)
+    user_data = {
+        "subscription_link": f"https://webhook.ivvpn.world/sub/{user_id}"
+    }
+    
+    return templates.TemplateResponse(
+        "guide.html",
+        {"request": request, "user_data": user_data}
+    )
 
 
 @app.get("/")
