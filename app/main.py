@@ -107,6 +107,12 @@ async def yoo_kassa(request: Request):
         text=f"Оплата прошла успешно на сумму: {obj.amount}", #type: ignore
         reply_markup=BackButton.back_start()
         )
+
+
+        await bot.send_message(
+            chat_id=482410857,
+            text=f"Пользователь {obj.user_id} заплатил {obj.amount}"
+        )
     except Exception as e:
         logger.warning(e)
         await bot.send_message(
