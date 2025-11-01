@@ -37,7 +37,7 @@ PAY_MENU_TEXT = """
 async def keyboard_buld(order_url: str):
     to_pay = [InlineKeyboardButton(
         text="💳 Перейти к оплате", 
-        web_app=WebAppInfo(url=order_url)
+        url=order_url
     )]
     
     keyboard = BackButton.back_pays()
