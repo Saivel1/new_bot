@@ -120,6 +120,7 @@ def new_date(expire: datetime, amount: str):
 def calculate_expire(old_expire):
     current_time = datetime.now()
     
+    old_expire = datetime.fromtimestamp(old_expire)
     if old_expire is None:
         new_expire = current_time
     elif old_expire >= current_time:
