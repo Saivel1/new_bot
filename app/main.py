@@ -70,6 +70,13 @@ async def webhook(request: Request):
     return {"ok": True}
 
 
+@app.post("/marzban")
+async def webhook_marz(request: Request):
+    data = await request.json()
+    logger.info(data)
+    return {"ok": True}
+
+
 @app.post("/pay")
 async def yoo_kassa(request: Request):
     data = await request.json()
