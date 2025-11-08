@@ -53,7 +53,9 @@ async def get_user_in_links(user_id):
     user_id = str(user_id)
     async with async_session() as session:
         user_repo = BaseRepository(session=session, model=LinksOrm)
+        logger.info(user_id)
         res = await user_repo.get_one(user_id=user_id)
+        logger.info(res)
         return res
     
 
