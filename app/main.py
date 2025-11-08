@@ -23,13 +23,19 @@ import handlers.subsmenu
 import handlers.trial
 
 
+print("=" * 50)
+print(f"Зарегистрированные роутеры: {len(dp.sub_routers)}")
+for i, router in enumerate(dp.sub_routers):
+    print(f"  Router {i+1}: {router}")
+print("=" * 50)
+
 templates = Jinja2Templates(directory="app/templates")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await bot.set_webhook(
         url=settings.WEBHOOK_URL,
-        drop_pending_updates=True
+        drop_pending_updates=False
     )
     print(f"Webhook установлен: {settings.WEBHOOK_URL}")
     # async with engine.begin() as conn:
