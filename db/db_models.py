@@ -11,7 +11,7 @@ class PaymentData(Base):
     __tablename__ = 'payment_data'
     
     payment_id: Mapped[str] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey('user.user_id'))
+    user_id: Mapped[str] = mapped_column(ForeignKey('users.user_id'))
     status: Mapped[str] = mapped_column(server_default='pending')
     amount: Mapped[int]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
