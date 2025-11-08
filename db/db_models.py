@@ -22,7 +22,7 @@ class PaymentData(Base):
 
 
 class UserOrm(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
     
     user_id: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str | None]
