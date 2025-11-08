@@ -1,12 +1,9 @@
-from granian import Granian
-from granian.constants import Loops, Interfaces
+import uvicorn
 
 if __name__ == "__main__":
-    Granian(
-        "app.main:app",
-        address="127.0.0.1",
-        port=8000,
-        interface=Interfaces.ASGI,  # не "asgi", а Interfaces.ASGI
-        workers=1,
-        loop=Loops.uvloop,          # не "uvloop", а Loops.uvloop
-    ).serve()
+    uvicorn.run(
+    "app.main:app",
+    host="127.0.0.1",
+    port=8000,
+    reload=True
+        )
