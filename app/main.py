@@ -23,12 +23,6 @@ import handlers.subsmenu
 import handlers.trial
 
 
-print("=" * 50)
-print(f"Зарегистрированные роутеры: {len(dp.sub_routers)}")
-for i, router in enumerate(dp.sub_routers):
-    print(f"  Router {i+1}: {router}")
-print("=" * 50)
-
 templates = Jinja2Templates(directory="app/templates")
 
 @asynccontextmanager
@@ -116,9 +110,9 @@ async def yoo_kassa(request: Request):
         logger.info(f"Для пользователя {obj.user_id} оплата и обработка прошли успешно.")
 
         await bot.send_message(
-        chat_id=obj.user_id, #type: ignore
-        text=f"Оплата прошла успешно на сумму: {obj.amount}", #type: ignore
-        reply_markup=BackButton.back_start()
+            chat_id=obj.user_id, #type: ignore
+            text=f"Оплата прошла успешно на сумму: {obj.amount}", #type: ignore
+            reply_markup=BackButton.back_start()
         )
 
 
