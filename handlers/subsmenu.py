@@ -7,6 +7,7 @@ from logger_setup import logger
 from marz.backend import marzban_client
 from misc.utils import to_link, get_sub_url, get_user_in_links
 from config_data.config import settings as s
+from datetime import datetime, timedelta
 
 text_pattern = """
 🔐 **Ваши подписки IV VPN**
@@ -37,8 +38,39 @@ async def main_subs(callback: CallbackQuery):
         parse_mode="MARKDOWN"
     )
 
+
+processed_callbacks = {}  # {callback_id: timestamp}
+
+async def is_duplicate_callback(callback_id: str) -> bool:
+    """Проверяет, обрабатывали ли мы уже этот callback"""
+    current_time = datetime.now()
+    
+    # Очистка старых записей (старше 60 секунд)
+    expired_keys = [
+        key for key, timestamp in processed_callbacks.items()
+        if current_time - timestamp > timedelta(seconds=60)
+    ]
+    for key in expired_keys:
+        del processed_callbacks[key]
+    
+    # Проверка на дубликат
+    if callback_id in processed_callbacks:
+        return True
+    
+    # Сохраняем timestamp
+    processed_callbacks[callback_id] = current_time
+    return False
+
+
 @dp.callback_query(F.data.startswith("sub_"))
 async def process_sub(callback: CallbackQuery):
+    if await is_duplicate_callback(callback.id):
+        logger.warning(f"⚠️ Дубликат callback {callback.id} от {callback.from_user.id}")
+        await callback.answer()
+        return
+    
+    await callback.answer()
+    
     sub_id = callback.data.replace("sub_", "") #type: ignore
     user_id = str(callback.from_user.id)
     logger.info(f"ID : {user_id} | Нажал {callback.data}")
