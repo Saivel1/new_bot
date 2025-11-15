@@ -101,7 +101,6 @@ async def yoo_kassa(request: Request):
     logger.info(f'{pay_id} | {pay_am}')
     user_marz = await marzban_client.get_user(user_id=obj.user_id)
 
-    user = await get_user(user_id=obj.user_id)
     expire =  calculate_expire(old_expire=user_marz['expire']) #type: ignore
     new_expire = new_date(expire=expire, amount=pay_am['value'])
 

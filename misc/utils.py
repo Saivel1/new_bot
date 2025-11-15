@@ -72,13 +72,13 @@ async def modify_user(username, expire: datetime):
     data = datetime.timestamp(expire)
     data = int(data)
     username = str(username)
-
+    logger.info(f"Отправляю запрос в Marzban: user={username}, new_expire={expire}")
     user = await marzban_client.get_user(user_id=username)
     if not user:
         user = await marzban_client.create_user(username=username)
     
     link = await get_user_in_links(user_id=username)
-    logger.info(link)
+    logger.info(link.uuid) #type: ignore
     if not link:
         async with async_session() as session:
             repo = BaseRepository(session=session, model=LinksOrm)
@@ -97,10 +97,10 @@ async def modify_user(username, expire: datetime):
             res = await repo.create(data_panel)
             logger.info(res)
 
-        await marzban_client.modify_user(
-            user_id=username, 
-            expire=data
-        )
+    await marzban_client.modify_user(
+        user_id=username, 
+        expire=data
+    )
     
     async with async_session() as session:
         repo = BaseRepository(session=session, model=UserOrm)
@@ -115,13 +115,16 @@ def new_date(expire: datetime, amount: str):
     amount = amount.split(".")[0]
     amou = int(amount)
     cnt_monthes = add_monthes.get(amou)
+    logger.debug(cnt_monthes)
+    logger.debug(expire + timedelta(days=cnt_monthes*MONTH)) #type: ignore
     
     return expire + timedelta(days=cnt_monthes*MONTH) #type: ignore
 
 
 def calculate_expire(old_expire):
     current_time = datetime.now()
-    
+    logger.debug(old_expire)
+
     old_expire = datetime.fromtimestamp(old_expire)
     if old_expire is None:
         new_expire = current_time
@@ -129,8 +132,10 @@ def calculate_expire(old_expire):
         new_expire = old_expire
     else:
         new_expire = current_time
-    
+    logger.debug(new_expire)
+
     return new_expire
+
 
 async def create_user(user_id, username: str | None = None):
     user_id = str(user_id)
@@ -145,6 +150,7 @@ async def create_user(user_id, username: str | None = None):
         res = await user_repo.create(data)
         return res
     
+
 async def get_sub_url(user_id):
     user_id = str(user_id)
     async with async_session() as session:
