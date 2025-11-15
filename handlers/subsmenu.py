@@ -8,6 +8,7 @@ from marz.backend import marzban_client
 from misc.utils import to_link, get_sub_url, get_user_in_links
 from config_data.config import settings as s
 from datetime import datetime, timedelta
+from aiogram.exceptions import TelegramBadRequest
 
 text_pattern = """
 🔐 **Ваши подписки IV VPN**
@@ -70,7 +71,7 @@ async def process_sub(callback: CallbackQuery):
         return
     
     await callback.answer()
-    
+
     sub_id = callback.data.replace("sub_", "") #type: ignore
     user_id = str(callback.from_user.id)
     logger.info(f"ID : {user_id} | Нажал {callback.data}")
@@ -95,8 +96,14 @@ async def process_sub(callback: CallbackQuery):
 
 💡 <i>Используйте универсальную ссылку для автоматического обновления серверов, или ключ для ручной настройки.</i>
 """
-    await callback.message.edit_text( #type: ignore
-        text=text_response,
-        reply_markup=SubMenu.links_keyboard(links=data.titles), #type: ignore
-        parse_mode="HTML"
-    )
+    try:
+        await callback.message.edit_text( #type: ignore
+            text=text_response,
+            reply_markup=SubMenu.links_keyboard(links=data.titles), #type: ignore
+            parse_mode="HTML"
+        )
+    except TelegramBadRequest as e:
+        if "message is not modified" in str(e):
+            logger.debug(f"Сообщение не изменилось для {callback.from_user.id}")
+        else:
+            raise
