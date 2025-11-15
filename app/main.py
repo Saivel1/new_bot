@@ -21,6 +21,7 @@ import handlers.instructions
 import handlers.paymenu
 import handlers.subsmenu
 import handlers.trial
+import handlers.others
 
 
 templates = Jinja2Templates(directory="app/templates")
