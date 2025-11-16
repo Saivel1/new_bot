@@ -125,14 +125,15 @@ def calculate_expire(old_expire):
     current_time = datetime.now()
     logger.debug(old_expire)
 
-    old_expire = datetime.fromtimestamp(old_expire)
     if old_expire is None:
         new_expire = current_time
-    elif old_expire >= current_time:
-        new_expire = old_expire
     else:
-        new_expire = current_time
-    logger.debug(new_expire)
+        old_expire = datetime.fromtimestamp(old_expire)
+        if old_expire >= current_time:
+            new_expire = old_expire
+        else:
+            new_expire = current_time
+        logger.debug(new_expire)
 
     return new_expire
 

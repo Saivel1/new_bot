@@ -99,9 +99,9 @@ async def yoo_kassa(request: Request):
     pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
 
     logger.info(f'{pay_id} | {pay_am}')
-    user_marz = await marzban_client.get_user(user_id=obj.user_id)
+    user = await get_user(user_id=obj.user_id)
 
-    expire =  calculate_expire(old_expire=user_marz['expire']) #type: ignore
+    expire =  calculate_expire(old_expire=user.subscription_end) #type: ignore
     new_expire = new_date(expire=expire, amount=pay_am['value'])
 
 
