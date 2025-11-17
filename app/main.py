@@ -82,52 +82,90 @@ async def webhook_marz(request: Request):
 async def yoo_kassa(request: Request):
     data = await request.json()
     event = data.get('event')
-    order_id = data.get('object', {}).get("id", {})
-
-    if order_id == {}:
-        logger.warning(f'{order_id} Response: {data}')
-        return {"status": "ne-ok"}
+    order_id = data.get('object', {}).get("id")
     
-
+    if not order_id:
+        logger.warning(f'Missing order_id. Response: {data}')
+        return {"status": "error", "message": "missing order_id"}
+    
+    logger.info(f"Webhook received: order={order_id}, event={event}")
+    
+    # Обновляем статус
     obj = await change_status(order_id=order_id, status=event)
-    if not obj:
-        logger.info(f"Order: {order_id} was canceled or TimeOut")
-        return {"response": "Order was canceled"}
     
-
+    if obj is False:  # Canceled
+        logger.info(f"Order {order_id} was canceled")
+        return {"status": "canceled"}
+    
+    if obj is None:  # waiting_for_capture
+        logger.info(f"Order {order_id} waiting for capture")
+        return {"status": "waiting"}
+    
+    # Проверка на повторную обработку
+    if obj.status == "succeeded":
+        logger.info(f"Order {order_id} already processed")
+        return {"status": "already_processed"}
+    
+    # Получаем данные платежа
     obj_data = data.get("object", {})
-    pay_id, pay_am = obj_data.get('id'), obj_data.get('amount')
-
-    logger.info(f'{pay_id} | {pay_am}')
-    user = await get_user(user_id=obj.user_id)
-
-    expire =  calculate_expire(old_expire=user.subscription_end) #type: ignore
-    new_expire = new_date(expire=expire, amount=pay_am['value'])
-
-
+    pay_id = obj_data.get('id')
+    pay_am = obj_data.get('amount', {})
+    
+    logger.info(f"Processing payment: id={pay_id}, amount={pay_am}, user={obj.user_id}")
+    
     try:
-        await modify_user(username=obj.user_id, expire=new_expire)
-        logger.info(f"Для пользователя {obj.user_id} оплата и обработка прошли успешно.")
-
+        # Получаем пользователя из БД
+        user = await get_user(user_id=obj.user_id)
+        if not user:
+            raise Exception(f"User {obj.user_id} not found in DB")
+        
+        # Вычисляем новую дату
+        expire = calculate_expire(old_expire=user.subscription_end)
+        new_expire = new_date(expire=expire, amount=pay_am.get('value', '0'))
+        
+        logger.info(f"User {obj.user_id}: old_expire={user.subscription_end}, new_expire={new_expire}")
+        
+        # Обновляем подписку
+        result = await modify_user(username=obj.user_id, expire=new_expire)
+        
+        if not result:
+            raise Exception("Failed to modify user")
+        
+        # Уведомления
+        logger.info(f"Payment processed successfully for user {obj.user_id}")
+        
         await bot.send_message(
-            chat_id=obj.user_id, #type: ignore
-            text=f"Оплата прошла успешно на сумму: {obj.amount}", #type: ignore
+            chat_id=obj.user_id,
+            text=f"Оплата прошла успешно на сумму: {obj.amount}",
             reply_markup=BackButton.back_start()
         )
-
-
+        
         await bot.send_message(
             chat_id=482410857,
             text=f"Пользователь {obj.user_id} заплатил {obj.amount}"
         )
+        
+        return {"status": "ok"}
+        
     except Exception as e:
-        logger.warning(e)
+        logger.error(f"Error processing payment {order_id}: {e}", exc_info=True)
+        
+        # Уведомляем пользователя
+        try:
+            await bot.send_message(
+                text="Возникла ошибка при обработке платежа. Напиши в поддержку /help",
+                chat_id=obj.user_id
+            )
+        except:
+            pass
+        
+        # Уведомляем админа
         await bot.send_message(
-            text="Возникла ошибка, напиши в поддержку /help",
-             chat_id=obj.user_id
+            chat_id=482410857,
+            text=f"❌ Ошибка обработки платежа {order_id} для {obj.user_id}: {e}"
         )
-
-    return {"ok": True}
+        
+        return {"status": "error", "message": str(e)}
 
 
 @app.get("/sub/{uuid}")

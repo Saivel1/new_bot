@@ -201,6 +201,22 @@ class MarzbanClient:
             await asyncio.sleep(0.1)
             logger.info("Сессия MarzbanClient закрыта")
 
+    async def health_check(self) -> bool:
+        """Проверка доступности панели (TCP уровень)"""
+        try:
+            timeout = aiohttp.ClientTimeout(total=5)
+            
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                # HEAD запрос = минимальный трафик
+                async with session.head(url=self.base_url) as response:
+                    # Любой HTTP ответ = сервер жив
+                    logger.debug(f'Панель {self.base_url} доступна (статус {response.status})')
+                    return True
+        
+        except Exception as e:
+            logger.warning(f'Панель {self.base_url} недоступна: {e}')
+            return False
+
 
 # Singleton instance
 marzban_client = MarzbanClient()

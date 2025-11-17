@@ -10,8 +10,8 @@ from aiogram.types import InlineKeyboardButton
 from db.db_models import PaymentData
 from db.database import async_session
 from repositories.base import BaseRepository
-from aiogram.types import WebAppInfo
-
+from marz.backend import marzban_client
+from bot_instance import bot
 
 async def create_order(amount: int):
     mail = await Anymessage().order_email()
@@ -33,6 +33,15 @@ PAY_MENU_TEXT = """
 Выберите тариф:
 """
 
+ERROR_TEXT = """
+🚧 <b>Упс! Что-то пошло не так</b>
+
+Мы уже работаем над решением проблемы.
+Попробуйте обновить через пару минут 🔄
+
+Нужна помощь? → /help
+"""
+
 
 async def keyboard_buld(order_url: str):
     to_pay = [InlineKeyboardButton(
@@ -49,6 +58,22 @@ async def keyboard_buld(order_url: str):
 async def pay_menu(callback: CallbackQuery):
     user_id = callback.from_user.id #type: ignore
     logger.info(f"ID : {user_id} | Нажал на кнопку выбора платежа")
+
+    health = await marzban_client.health_check()
+    if not health:
+        await callback.message.edit_text( #type: ignore
+            text=ERROR_TEXT,
+            reply_markup=BackButton.back_start(),
+            parse_mode="HTML"
+        )
+
+        await bot.send_message(
+            chat_id=482410857,
+            text=f"❌ Панель недоступна"
+        )
+
+        return
+
     await callback.message.edit_text( #type:ignore
         text=PAY_MENU_TEXT,
         reply_markup=PayMenu.main_keyboard(),
