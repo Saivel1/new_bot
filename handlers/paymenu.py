@@ -14,7 +14,8 @@ from marz.backend import marzban_client
 from bot_instance import bot
 
 async def create_order(amount: int):
-    mail = await Anymessage().order_email()
+    #mail = await Anymessage().order_email()
+    mail = 'saivel.mezencev1@gmail.com'
     res = await PaymentYoo().create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
     return res
 

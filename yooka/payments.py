@@ -29,7 +29,7 @@ class PaymentYoo:
                 "description": "Подписка на VPN. В боте @ivvpnbot",
                 "receipt": {
                     "customer": {
-                            "email": 'saivel.mezencev1@gmail.com' # Обязательно для отправки чека
+                            "email": email # Обязательно для отправки чека
                         },
                         "items": [
                             {
