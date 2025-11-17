@@ -48,7 +48,7 @@ class Anymessage():
                 logger.warning(f'Ошибка в покупке email, функции order_email: {e}')
 
 
-async def create_user_mailbox(user_id: int) -> tuple[str, str] | None:
+async def create_user_mailbox(user_id: int):
     """Создать почтовый ящик для пользователя"""
     email = f"user{user_id}@ivvpn.world"
     
@@ -59,7 +59,7 @@ async def create_user_mailbox(user_id: int) -> tuple[str, str] | None:
             
             if data["exists"]:
                 print(f"Ящик {email} уже существует")
-                return None
+                return email
         
         # Создаём новый
         password = generate_random_password()
