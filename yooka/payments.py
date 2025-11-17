@@ -1,7 +1,6 @@
 from yookassa import Payment, Configuration
 import uuid
 import json
-import logging
 from config_data.config import settings
 from logger_setup import logger
 
@@ -30,7 +29,7 @@ class PaymentYoo:
                 "description": "Подписка на VPN. В боте @ivvpnbot",
                 "receipt": {
                     "customer": {
-                            "email": email # Обязательно для отправки чека
+                            "email": 'saivel.mezencev1@gmail.com' # Обязательно для отправки чека
                         },
                         "items": [
                             {
