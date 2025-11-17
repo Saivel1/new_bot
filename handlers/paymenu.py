@@ -15,7 +15,9 @@ from bot_instance import bot
 
 async def create_order(amount: int, user_id):
     mail = await create_user_mailbox(user_id)
+    logger.debug(mail)
     res = await PaymentYoo().create_payment(amount=amount, plan=str((amount/50)), email=mail) # type: ignore
+    logger.debug(res)
     return res
 
 PAY_MENU_TEXT = """
