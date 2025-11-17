@@ -69,6 +69,7 @@ async def create_user_mailbox(user_id: int):
             json={"email": email, "password": password}
         ) as response:
             if response.status == 200:
-                return email, password
+                logger.info(f'Содан email: {email} password: {password}')
+                return email
             else:
                 return None
