@@ -4,7 +4,7 @@ from repositories.base import BaseRepository
 from db.database import async_session
 from db.db_models import UserOrm, LinksOrm
 from datetime import datetime
-from marz.backend import marzban_client
+from marz.backend import MarzbanClient
 from misc.bot_setup import add_monthes
 from datetime import timedelta
 from logger_setup import logger
@@ -72,6 +72,7 @@ async def modify_user(username, expire: datetime):
     data = datetime.timestamp(expire)
     data = int(data)
     username = str(username)
+    marzban_client = MarzbanClient()
     logger.info(f"Отправляю запрос в Marzban: user={username}, new_expire={expire}")
     user = await marzban_client.get_user(user_id=username)
     if not user:

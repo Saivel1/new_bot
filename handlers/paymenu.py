@@ -10,7 +10,7 @@ from aiogram.types import InlineKeyboardButton
 from db.db_models import PaymentData
 from db.database import async_session
 from repositories.base import BaseRepository
-from marz.backend import marzban_client
+from marz.backend import MarzbanClient
 from bot_instance import bot
 
 async def create_order(amount: int, user_id):
@@ -62,6 +62,7 @@ async def keyboard_buld(order_url: str):
 async def pay_menu(callback: CallbackQuery):
     user_id = callback.from_user.id #type: ignore
     logger.info(f"ID : {user_id} | Нажал на кнопку выбора платежа")
+    marzban_client = MarzbanClient()
 
     health = await marzban_client.health_check()
     if not health:

@@ -12,7 +12,6 @@ from keyboards.deps import BackButton
 from misc.utils import modify_user, calculate_expire, get_user, new_date, get_links_of_panels
 import aiohttp, asyncio
 from fastapi.templating import Jinja2Templates
-from marz.backend import marzban_client
 
 
 # Импортируем handlers для регистрации
