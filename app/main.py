@@ -60,6 +60,17 @@ async def change_status(order_id: str, status: str):
         if st == 'waiting_for_capture':
             return None
         return res
+    
+async def get_status_difference(order_id: str, status: str):
+    st = status.split(".")[1]
+    async with async_session() as session:
+        repo = BaseRepository(session=session, model=PaymentData)
+        res = await repo.get_one(payment_id=order_id)
+
+        if st == res.status: #type:ignore
+            return False
+        
+        return True
 
 
 @app.post("/webhook")
@@ -89,6 +100,10 @@ async def yoo_kassa(request: Request):
     
     logger.info(f"Webhook received: order={order_id}, event={event}")
     
+    if not await get_status_difference(order_id=order_id, status=event):
+        logger.info(f"Order {order_id} already proceeded")
+        return {"status": "not edited"}
+
     # Обновляем статус
     obj = await change_status(order_id=order_id, status=event)
     
@@ -99,11 +114,7 @@ async def yoo_kassa(request: Request):
     if obj is None:  # waiting_for_capture
         logger.info(f"Order {order_id} waiting for capture")
         return {"status": "waiting"}
-    
-    # Проверка на повторную обработку
-    if obj.status == "succeeded":
-        logger.info(f"Order {order_id} already processed")
-        return {"status": "already_processed"}
+
     
     # Получаем данные платежа
     obj_data = data.get("object", {})
