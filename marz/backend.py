@@ -46,6 +46,8 @@ class MarzbanClient:
                                 await asyncio.sleep(delay * (attempt + 1))
                                 continue
                             else:
+                                error_body = await response.text()
+                                logger.warning(f"Ошибка {response.status}: {error_body}")
                                 return None
                         
                         # Серверные ошибки - retry
@@ -55,6 +57,8 @@ class MarzbanClient:
                             continue
                         
                         else:
+                            error_body = await response.text()
+                            logger.warning(f"Ошибка {response.status}: {error_body}")
                             logger.warning(f"Ошибка {response.status}")
                             return None
             
@@ -160,7 +164,7 @@ class MarzbanClient:
                     }
                 },
                 "inbounds": {
-                    "vless": ["VLESS TCP VISION REALITY", "NODE1_REALITY"]
+                    "vless": ["VLESS TCP REALITY"]
                 }
             }
 
