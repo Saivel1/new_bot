@@ -95,7 +95,6 @@ async def modify_user(username, expire: datetime):
                 data_panel["panel_2"] = sub_url
             logger.info(data_panel)
             res = await repo.create(data_panel)
-            logger.info(link.uuid) #type: ignore
             logger.info(res)
 
     await marzban_client.modify_user(
