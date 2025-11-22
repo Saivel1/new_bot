@@ -9,15 +9,43 @@ from repositories.base import BaseRepository
 from datetime import timedelta
 from config_data.config import settings
 from keyboards.deps import BackButton
+from datetime import datetime
+
+processed_callbacks = {}  # {callback_id: timestamp}
+
+async def is_duplicate_callback(callback_id: str) -> bool:
+    """Проверяет, обрабатывали ли мы уже этот callback"""
+    current_time = datetime.now()
+    
+    # Очистка старых записей (старше 60 секунд)
+    expired_keys = [
+        key for key, timestamp in processed_callbacks.items()
+        if current_time - timestamp > timedelta(seconds=60)
+    ]
+    for key in expired_keys:
+        del processed_callbacks[key]
+    
+    # Проверка на дубликат
+    if callback_id in processed_callbacks:
+        return True
+    
+    # Сохраняем timestamp
+    processed_callbacks[callback_id] = current_time
+    return False
 
 
 @dp.callback_query(F.data == 'trial')
 async def trial_activate(callback: CallbackQuery):
+    if await is_duplicate_callback(callback.id):
+        logger.warning(f"⚠️ Дубликат callback {callback.id} от {callback.from_user.id}")
+        await callback.answer()
+        return
+    
     user_id = callback.from_user.id 
     logger.info(f'Пользователь {user_id} нажал пробный период')
 
     await callback.message.edit_text(text="⏳ Загрузка 0%") #type: ignore
-
+    await callback.answer()
     await callback.message.edit_text( #type: ignore
         text="Активируем пробный период"
     )
