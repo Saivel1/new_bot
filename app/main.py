@@ -61,13 +61,17 @@ async def change_status(order_id: str, status: str):
             return None
         return res
     
+
 async def get_status_difference(order_id: str, status: str):
     st = status.split(".")[1]
     async with async_session() as session:
         repo = BaseRepository(session=session, model=PaymentData)
         res = await repo.get_one(payment_id=order_id)
+        
+        if res is None:
+            return False
 
-        if st == res.status: #type:ignore
+        if st == res.status:
             return False
         
         return True
@@ -110,6 +114,7 @@ async def yoo_kassa(request: Request):
     if obj is False:  # Canceled
         logger.info(f"Order {order_id} was canceled")
         return {"status": "canceled"}
+    
     
     if obj is None:  # waiting_for_capture
         logger.info(f"Order {order_id} waiting for capture")

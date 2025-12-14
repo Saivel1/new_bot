@@ -43,6 +43,7 @@ async def cmd_start(message: types.Message):
             parse_mode="HTML"
         ) 
 
+
 @dp.callback_query(F.data == "start_menu")
 async def call_start(callback: CallbackQuery):
     user_id = callback.from_user.id #type: ignore
@@ -66,6 +67,7 @@ async def call_start(callback: CallbackQuery):
             reply_markup=MainKeyboard.main_keyboard(),
             parse_mode="HTML"
         )
+
 
 @dp.message(Command("id"))
 async def cmd_id(message: types.Message):
